@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 10.0.2.2 is the equivalent to localhost -->
+    <string name="local_baseUrl">https://10.0.2.2:8443/</string>
+
+</resources>
