@@ -16,11 +16,17 @@ import java.util.List;
 
 
 public class ActivityMain extends Activity {
+    private List<TitleSectionPair> sections = new ArrayList<TitleSectionPair>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(new SectionsAdapter(getFragmentManager()));
@@ -33,10 +39,8 @@ public class ActivityMain extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_activity_main, menu);
+        getMenuInflater().inflate(R.menu.main_options, menu);
 
-        // Setup the search action view
-        menu.findItem(R.id.action_search).getActionView();
         return true;
     }
 
@@ -54,15 +58,12 @@ public class ActivityMain extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+
+
     class SectionsAdapter extends FragmentPagerAdapter {
-        List<TitleSectionPair> sections = new ArrayList<TitleSectionPair>();
 
         public SectionsAdapter(FragmentManager fm) {
             super(fm);
-            sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
-            sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
-            sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
-            sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
         }
 
         @Override
@@ -81,13 +82,14 @@ public class ActivityMain extends Activity {
         }
     }
 
-    static class TitleSectionPair {
-        String title;
-        Fragment section;
+}
 
-        TitleSectionPair(String title, Fragment section) {
-            this.title = title;
-            this.section = section;
-        }
+class TitleSectionPair {
+    String title;
+    Fragment section;
+
+    TitleSectionPair(String title, Fragment section) {
+        this.title = title;
+        this.section = section;
     }
 }

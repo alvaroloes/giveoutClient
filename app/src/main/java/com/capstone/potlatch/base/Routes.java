@@ -34,6 +34,10 @@ public class Routes {
         // First, substitute the path segments
         String url = StringUtils.stripEnd(baseUrl,"/") + "/" + StringUtils.stripStart(path, "/");
         for (int i = 0; i < paramsKeyValue.length; i += 2) {
+            if (paramsKeyValue[i] == null || paramsKeyValue[i + 1] == null ) {
+                continue;
+            }
+
             String key = String.valueOf(paramsKeyValue[i]);
             String value = String.valueOf(paramsKeyValue[i + 1]);
 

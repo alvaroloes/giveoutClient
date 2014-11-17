@@ -8,5 +8,6 @@
     <string name="section_gifts_chains">Gifts chains</string>
     <string name="section_top_givers">Top Gift givers</string>
     <string name="section_my_gifts">My Gifts</string>
+    <string name="filter_by_title">Filter by title</string>
 
 </resources>

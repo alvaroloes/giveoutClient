@@ -64,7 +64,9 @@ public class ResourcesUtils {
                 int resId;
 
                 for(String prefix : prefixList) {
-                    prefix += prefixSeparator;
+                    if (prefix.length() > 0) {
+                        prefix += prefixSeparator;
+                    }
 
                     // Check collection resource types (integer and string arrays)
                     if (Collection.class.isAssignableFrom(fieldClass)) {

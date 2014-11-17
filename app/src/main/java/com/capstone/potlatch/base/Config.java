@@ -6,7 +6,8 @@ import com.capstone.potlatch.utils.ResourcesUtils;
 
 public class Config {
     // Filled from resources: environment dependent
-    static public String baseUrl;
+    public static String baseUrl;
+    public static Integer pageSize;
 
     static public void initFor(Context context, String environment){
         ResourcesUtils.fillStatic(context, Config.class,
