@@ -3,6 +3,8 @@
 
     <!-- 10.0.2.2 is the equivalent to localhost -->
     <string name="local_baseUrl">https://10.0.2.2:8443/</string>
+    <string name="local_basicAuthName">mobile</string>
+    <string name="local_basicAuthPass" />
 
     <integer name="pageSize">5</integer>
 

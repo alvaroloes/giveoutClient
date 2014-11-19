@@ -16,6 +16,8 @@ public class Routes {
     public static final String TOP_KIND_PARAMETER = "kind";
     public static final String REGRET_PARAMETER = "regret";
 
+    public static final String TOKEN_PATH = "/oauth/token";
+
     public static final String GIFTS_PATH = "/gifts";
     public static final String GIFTS_ID_PATH = GIFTS_PATH + "/{id}";
     public static final String MY_GIFTS_PATH = GIFTS_PATH + "/mine";
@@ -60,16 +62,4 @@ public class Routes {
         }
         return url;
     }
-
-//    public static String urlFor(String path, List<String> paramsKeyValue, ) {
-//        String finalPath = path;
-//        for (int i = 0; i < paramsKeyValue.length; i += 2) {
-//            finalPath = finalPath.replace(paramsKeyValue[i], paramsKeyValue[i + 1]);
-//        }
-//
-//        if (params != null) {
-//
-//        }
-//        return finalPath;
-//    }
 }

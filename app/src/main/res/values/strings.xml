@@ -9,5 +9,14 @@
     <string name="section_top_givers">Top Gift givers</string>
     <string name="section_my_gifts">My Gifts</string>
     <string name="filter_by_title">Filter by title</string>
+    <string name="username">User name</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="new_gift">Create new gift</string>
+    <string name="title_activity_activity_create_gift">Create a gift</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="gift_touched_me">This Gift touched me</string>
+    <string name="flag_inappropriate">Flag as inappropriate</string>
+    <string name="login_title">Please sign in</string>
 
 </resources>

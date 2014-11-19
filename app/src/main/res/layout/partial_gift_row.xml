@@ -35,14 +35,16 @@
         android:layout_height="wrap_content"
         android:src="@android:drawable/btn_star"
         android:layout_alignParentEnd="true"
-        android:layout_below="@+id/gift_image" />
+        android:layout_below="@+id/gift_image"
+        android:contentDescription="@string/gift_touched_me" />
     <ImageButton
         android:id="@+id/gift_inappropriate_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/btn_inappropriate"
         android:layout_below="@+id/gift_image"
-        android:layout_toLeftOf="@+id/gift_touch_button" />
+        android:layout_toLeftOf="@+id/gift_touch_button"
+        android:contentDescription="@string/flag_inappropriate" />
 
     <TextView
         android:id="@+id/gift_description"

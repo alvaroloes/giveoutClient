@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.capstone.potlatch.adapters.GiftsAdapter;
@@ -100,18 +101,21 @@ public class SectionGifts extends Fragment {
 
         lastLoadedDataPage = page;
         lastTitleFilter = titleFilter;
+
         String url = Routes.urlFor(Routes.GIFTS_PATH,
                                    Routes.PAGE_PARAMETER, page,
                                    Routes.LIMIT_PARAMETER, Config.pageSize,
                                    Routes.TITLE_PARAMETER, titleFilter);
 
-        JacksonRequest<List<Gift>> req = new JacksonRequest<List<Gift>>(url,
-                                                                        new TypeReference<List<Gift>>() {},
-                                                                        new RequestSuccessListener(),
-                                                                        new RequestErrorListener());
+        JacksonRequest<List<Gift>> req = new JacksonRequest<List<Gift>>(Request.Method.GET, url,
+                                                               new TypeReference<List<Gift>>() {},
+                                                               new RequestSuccessListener(),
+                                                               new RequestErrorListener());
         Net.addToQueue(req);
         System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));
-        //TODO: no mostrar los gifts no publicados
+        //TODO: el server debe responder con gifts que tengan una Gift chain, excepto en gifts/mine
+        //Permitir subir imágenes
+        //Scalar las imágenes y guardarlas en el servidor mismo (con el id del Gift como carpeta)
     }
 
     class RequestSuccessListener implements Response.Listener<List<Gift>> {
@@ -141,6 +145,12 @@ public class SectionGifts extends Fragment {
         }
 
         @Override
+        public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+            loadPageData(0, null);
+            return true;
+        }
+
+        @Override
         public boolean onQueryTextChange(String newText) {
             return false;
         }
@@ -150,11 +160,6 @@ public class SectionGifts extends Fragment {
             return true;
         }
 
-        @Override
-        public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-            loadPageData(0, null);
-            return true;
-        }
     }
 
     class ScrollListener extends EndlessScrollListener {

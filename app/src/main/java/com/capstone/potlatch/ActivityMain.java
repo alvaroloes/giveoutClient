@@ -3,6 +3,7 @@ package com.capstone.potlatch;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -52,7 +53,14 @@ public class ActivityMain extends Activity {
         int id = item.getItemId();
         switch(id) {
             case R.id.action_settings:
+                Intent i = new Intent(this, ActivitySettings.class);
+                startActivity(i);
                 return true;
+            case R.id.action_new_gift:
+                i = new Intent(this, ActivityCreateGift.class);
+                startActivity(i);
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

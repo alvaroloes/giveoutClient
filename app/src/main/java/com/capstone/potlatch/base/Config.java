@@ -7,6 +7,8 @@ import com.capstone.potlatch.utils.ResourcesUtils;
 public class Config {
     // Filled from resources: environment dependent
     public static String baseUrl;
+    public static String basicAuthName;
+    public static String basicAuthPass;
     public static Integer pageSize;
 
     static public void initFor(Context context, String environment){

@@ -15,6 +15,8 @@ public class App extends Application {
     public void onCreate() {
         // Configure network singleton
         Net.setContext(this);
+// TODO: Get the saved state and set the token header in Net.
+//        Net.getGlobalHeaders()
 
         // Initialize Config class
         Config.initFor(this, env.name());
