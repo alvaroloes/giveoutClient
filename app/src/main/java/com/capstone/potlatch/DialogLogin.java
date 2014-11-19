@@ -104,7 +104,7 @@ public class DialogLogin extends DialogFragment {
         }
 
         if (password.length() == 0) {
-            mUsername.setError("Please enter a password");
+            mPassword.setError("Please enter a password");
             error = true;
         }
 
@@ -121,7 +121,6 @@ public class DialogLogin extends DialogFragment {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> params = new HashMap<String, String>();
-                //grant_type=password&username=prueba&password=demodemo
                 params.put("grant_type", "password");
                 params.put("username", username);
                 params.put("password", password);
