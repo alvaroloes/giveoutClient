@@ -1,6 +1,6 @@
 package com.capstone.potlatch.base;
 
-import com.capstone.potlatch.models.Token;
+import com.capstone.potlatch.net.OAuth2Token;
 import com.capstone.potlatch.models.User;
 
 /**
@@ -9,7 +9,7 @@ import com.capstone.potlatch.models.User;
 public class State {
     private static State mInstance;
     private User user;
-    private Token token;
+    private OAuth2Token oauth2Token;
 
     private State() {}
 
@@ -29,15 +29,15 @@ public class State {
         this.user = user;
     }
 
-    public Token getToken() {
-        return token;
+    public OAuth2Token getOauth2Token() {
+        return oauth2Token;
     }
 
-    public void setToken(Token token) {
-        this.token = token;
+    public void setOauth2Token(OAuth2Token oauth2Token) {
+        this.oauth2Token = oauth2Token;
     }
 
     public boolean isUserLoggedIn() {
-        return this.token != null;
+        return this.oauth2Token != null;
     }
 }

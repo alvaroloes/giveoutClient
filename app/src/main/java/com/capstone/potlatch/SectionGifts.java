@@ -29,25 +29,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SectionGifts extends Fragment {
+    private static final String ARG_FOR_CURRENT_USER = "FOR_CURRENT_USER";
+
     private List<Gift> gifts = new ArrayList<Gift>();
     private boolean dataHasBeenLoaded = false;
     private int lastLoadedDataPage = 0;
     private String lastTitleFilter;
+    private boolean forCurrentUser = false;
 
     // Non stateful members
     private GiftsAdapter mAdapter;
     private SearchView mSearchView;
     private ScrollListener mScrollListener;
 
-    public static SectionGifts newInstance() {
+    public static SectionGifts newInstance(boolean forCurrentUser) {
         SectionGifts fragment = new SectionGifts();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_FOR_CURRENT_USER, forCurrentUser);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            forCurrentUser = getArguments().getBoolean(ARG_FOR_CURRENT_USER);
+        }
         setHasOptionsMenu(true);
+        setRetainInstance(true);
     }
 
     @Override
@@ -86,6 +96,15 @@ public class SectionGifts extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // As this fragment state is retained, this ensures there is no memory leak
+        mSearchView = null;
+        mScrollListener = null;
+        mAdapter = null;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -113,9 +132,6 @@ public class SectionGifts extends Fragment {
                                                                new RequestErrorListener());
         Net.addToQueue(req);
         System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));
-        //TODO: el server debe responder con gifts que tengan una Gift chain, excepto en gifts/mine
-        //Permitir subir imágenes
-        //Scalar las imágenes y guardarlas en el servidor mismo (con el id del Gift como carpeta)
     }
 
     class RequestSuccessListener implements Response.Listener<List<Gift>> {

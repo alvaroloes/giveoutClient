@@ -15,7 +15,10 @@ public class App extends Application {
     public void onCreate() {
         // Configure network singleton
         Net.setContext(this);
-// TODO: Get the saved state and set the token header in Net.
+        //TODO: Get the saved state and set the token header in Net.
+
+        //TODO Permitir subir imágenes
+        //TODO Scalar las imágenes y guardarlas en el servidor mismo (con el id del Gift como carpeta)
 //        Net.getGlobalHeaders()
 
         // Initialize Config class

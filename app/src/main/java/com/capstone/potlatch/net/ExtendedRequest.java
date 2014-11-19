@@ -7,5 +7,7 @@ import java.util.Map;
  */
 public interface ExtendedRequest {
     public void setBasicAuth(String username, String password);
+    public void setOAuth2Token(OAuth2Token token);
+    public OAuth2Token getOAuth2Token();
     public void addHeaders(Map<String, String> extraHeaders);
 }

@@ -14,6 +14,7 @@ public class Net {
     private static Net mInstance;
     private static Context mCtx;
 
+    private OAuth2Token oauth2Token;
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
     private Map<String,String> globalHeaders;
@@ -56,7 +57,12 @@ public class Net {
 
     public static <T> void addToQueue(Request<T> req) {
         if (req instanceof ExtendedRequest) {
-            ((ExtendedRequest) req).addHeaders(get(mCtx).globalHeaders);
+            ExtendedRequest exReq = (ExtendedRequest) req;
+            exReq.addHeaders(getGlobalHeaders());
+            // Only set the global Oauth2 token if the request doesn't have one already specified
+            if (exReq.getOAuth2Token() == null) {
+                exReq.setOAuth2Token(getGlobalOAuth2Token());
+            }
         }
         get(mCtx).mRequestQueue.add(req);
     }
@@ -71,5 +77,13 @@ public class Net {
 
     public static void setGlobalHeaders(Map<String, String> globalHeaders) {
         get(mCtx).globalHeaders = globalHeaders;
+    }
+
+    public static void setGlobalOAuth2Token(OAuth2Token oauth2Token) {
+        get(mCtx).oauth2Token = oauth2Token;
+    }
+
+    public static OAuth2Token getGlobalOAuth2Token() {
+        return get(mCtx).oauth2Token;
     }
 }

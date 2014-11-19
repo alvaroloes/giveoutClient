@@ -7,6 +7,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
@@ -27,6 +28,7 @@ public class JacksonRequest<T> extends Request<T> implements ExtendedRequest {
 
     private String basicAuthName;
     private String basicAuthPass;
+    private OAuth2Token oauth2Token;
 
     private Map<String,String> headers = new HashMap<String, String>();
 
@@ -79,10 +81,27 @@ public class JacksonRequest<T> extends Request<T> implements ExtendedRequest {
     }
 
     @Override
+    public void deliverError(VolleyError error) {
+        if (error instanceof AuthFailureError) {
+            //todo
+            System.out.println("HERE WE SHOULD CHECK THE REFRESH TOKEN");
+        }
+        super.deliverError(error);
+    }
+
+    @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
-        if (basicAuthName != null && basicAuthPass != null) {
+        String authHeaderVal = null;
+
+        if (oauth2Token != null) {
+            authHeaderVal = "Bearer " + oauth2Token.access_token;
+        } else if (basicAuthName != null && basicAuthPass != null) {
             byte[] token = (basicAuthName + ":" + basicAuthPass).getBytes();
-            headers.put("Authorization", "Basic " + Base64.encodeToString(token, Base64.DEFAULT));
+            authHeaderVal = "Basic " + Base64.encodeToString(token, Base64.DEFAULT);
+        }
+
+        if (authHeaderVal != null) {
+            headers.put("Authorization", authHeaderVal);
         }
 
         return headers;
@@ -92,6 +111,16 @@ public class JacksonRequest<T> extends Request<T> implements ExtendedRequest {
     public void setBasicAuth(String username, String password) {
         basicAuthName = username;
         basicAuthPass = password;
+    }
+
+    @Override
+    public void setOAuth2Token(OAuth2Token token) {
+        oauth2Token = token;
+    }
+
+    @Override
+    public OAuth2Token getOAuth2Token() {
+        return oauth2Token;
     }
 
     @Override
