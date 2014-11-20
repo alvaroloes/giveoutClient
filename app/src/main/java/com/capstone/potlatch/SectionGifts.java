@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -19,16 +20,18 @@ import com.android.volley.VolleyError;
 import com.capstone.potlatch.adapters.GiftsAdapter;
 import com.capstone.potlatch.base.Config;
 import com.capstone.potlatch.base.Routes;
+import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.net.JacksonRequest;
 import com.capstone.potlatch.net.Net;
+import com.capstone.potlatch.utils.AwareFragment;
 import com.capstone.potlatch.utils.EndlessScrollListener;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectionGifts extends Fragment {
+public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerFragmentSelected, AwareFragment.OnUserLogin {
     private static final String ARG_FOR_CURRENT_USER = "FOR_CURRENT_USER";
 
     private List<Gift> gifts = new ArrayList<Gift>();
@@ -41,6 +44,7 @@ public class SectionGifts extends Fragment {
     private GiftsAdapter mAdapter;
     private SearchView mSearchView;
     private ScrollListener mScrollListener;
+    private Button mSignInButton;
 
     public static SectionGifts newInstance(boolean forCurrentUser) {
         SectionGifts fragment = new SectionGifts();
@@ -87,11 +91,20 @@ public class SectionGifts extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ListView v = (ListView) inflater.inflate(R.layout.fragment_section_gifts, container, false);
+        View v = inflater.inflate(R.layout.fragment_section_gifts, container, false);
+        ListView giftList = (ListView) v.findViewById(R.id.gift_list);
         mScrollListener = new ScrollListener();
-        v.setOnScrollListener(mScrollListener);
         mAdapter = new GiftsAdapter(getActivity(), gifts);
-        v.setAdapter(mAdapter);
+        giftList.setOnScrollListener(mScrollListener);
+        giftList.setAdapter(mAdapter);
+
+        mSignInButton = (Button) v.findViewById(R.id.sign_in_button);
+        mSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogLogin.show(getFragmentManager());
+            }
+        });
         return v;
     }
 
@@ -102,12 +115,36 @@ public class SectionGifts extends Fragment {
         mSearchView = null;
         mScrollListener = null;
         mAdapter = null;
+        mSignInButton = null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        checkUserAndLoadData();
+    }
 
+    @Override
+    public void onSelected() {
+        checkUserAndLoadData();
+    }
+
+    @Override
+    public void onLoginSuccess() {
+        checkUserAndLoadData();
+    }
+
+    @Override
+    public void onLoginCanceled() {
+        checkUserAndLoadData();
+    }
+
+    private void checkUserAndLoadData() {
+        if (forCurrentUser && ! State.get().isUserLoggedIn()) {
+            mSignInButton.setVisibility(View.VISIBLE);
+            return;
+        }
+        mSignInButton.setVisibility(View.GONE);
         if (!dataHasBeenLoaded) {
             loadPageData(0, null);
         }
@@ -121,7 +158,10 @@ public class SectionGifts extends Fragment {
         lastLoadedDataPage = page;
         lastTitleFilter = titleFilter;
 
-        String url = Routes.urlFor(Routes.GIFTS_PATH,
+        String basePath = forCurrentUser ? Routes.MY_GIFTS_PATH
+                                         : Routes.GIFTS_PATH;
+
+        String url = Routes.urlFor(basePath,
                                    Routes.PAGE_PARAMETER, page,
                                    Routes.LIMIT_PARAMETER, Config.pageSize,
                                    Routes.TITLE_PARAMETER, titleFilter);

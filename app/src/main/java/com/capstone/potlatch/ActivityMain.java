@@ -11,12 +11,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.capstone.potlatch.models.User;
+import com.capstone.potlatch.utils.AwareFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ActivityMain extends Activity {
+public class ActivityMain extends Activity implements DialogLogin.OnLoginListener {
     private List<TitleSectionPair> sections = new ArrayList<TitleSectionPair>();
 
     @Override
@@ -24,15 +26,16 @@ public class ActivityMain extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance()));
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance(false)));
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance(false)));
+        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance(false)));
+        sections.add(new TitleSectionPair(getString(R.string.section_my_gifts), SectionGifts.newInstance(true)));
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(new SectionsAdapter(getFragmentManager()));
 
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setOnPageChangeListener(new OnSectionSelectedListener());
         tabs.setViewPager(pager);
     }
 
@@ -66,7 +69,39 @@ public class ActivityMain extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onLoginSuccess(User user) {
+        for (TitleSectionPair pair : sections) {
+            if (! pair.section.isVisible()) {
+                continue;
+            }
+            if (pair.section instanceof AwareFragment.OnUserLogin) {
+                ((AwareFragment.OnUserLogin) pair.section).onLoginSuccess();
+            }
+        }
+    }
 
+    @Override
+    public void onLoginCanceled() {
+        for (TitleSectionPair pair : sections) {
+            if (! pair.section.isVisible()) {
+                continue;
+            }
+            if (pair.section instanceof AwareFragment.OnUserLogin) {
+                ((AwareFragment.OnUserLogin) pair.section).onLoginCanceled();
+            }
+        }
+    }
+
+    class OnSectionSelectedListener extends ViewPager.SimpleOnPageChangeListener {
+        @Override
+        public void onPageSelected(int position) {
+            TitleSectionPair f = sections.get(position);
+            if (f.section instanceof AwareFragment.OnViewPagerFragmentSelected) {
+                ((AwareFragment.OnViewPagerFragmentSelected) f.section).onSelected();
+            }
+        }
+    }
 
     class SectionsAdapter extends FragmentPagerAdapter {
 

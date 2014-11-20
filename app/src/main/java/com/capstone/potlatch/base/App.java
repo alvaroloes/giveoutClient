@@ -16,7 +16,7 @@ public class App extends Application {
         // Configure network singleton
         Net.setContext(this);
         //TODO: Get the saved state and set the token header in Net.
-
+        //TODO: Hacer un layout especial para los gifts de la sección My Gifts
         //TODO Permitir subir imágenes
         //TODO Scalar las imágenes y guardarlas en el servidor mismo (con el id del Gift como carpeta)
 //        Net.getGlobalHeaders()
