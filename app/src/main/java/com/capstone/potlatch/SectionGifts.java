@@ -125,6 +125,12 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     }
 
     @Override
+    public void onStop() {
+        Net.getQueue().cancelAll(this);
+        super.onStop();
+    }
+
+    @Override
     public void onSelected() {
         checkUserAndLoadData();
     }
@@ -170,6 +176,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
                                                                new TypeReference<List<Gift>>() {},
                                                                new RequestSuccessListener(),
                                                                new RequestErrorListener());
+        req.setTag(this);
         Net.addToQueue(req);
         System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));
     }
