@@ -19,8 +19,6 @@ public class Net {
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
     private Map<String,String> globalHeaders;
-    private String oauth2TokenRefreshURL;
-    private String oauth2TokenRefreshGrantType = "refresh_token";
 
     private Net(Context context) {
         // getApplicationContext() is key, it keeps you from leaking the
@@ -69,14 +67,6 @@ public class Net {
             if (exReq.getOAuth2Token() == null) {
                 exReq.setOAuth2Token(getGlobalOAuth2Token());
             }
-
-            if (exReq.getOauth2TokenRefreshURL() == null) {
-                exReq.setOauth2TokenRefreshURL(getOauth2TokenRefreshURL());
-            }
-
-            if (exReq.getOauth2TokenRefreshGrantType() == null) {
-                exReq.setOauth2TokenRefreshGrantType(getOauth2TokenRefreshGrantType());
-            }
         }
         get(mCtx).mRequestQueue.add(req);
     }
@@ -101,19 +91,4 @@ public class Net {
         return get(mCtx).oauth2Token;
     }
 
-    public static String getOauth2TokenRefreshURL() {
-        return get(mCtx).oauth2TokenRefreshURL;
-    }
-
-    public static void setOauth2TokenRefreshURL(String oauth2TokenRefreshURL) {
-        get(mCtx).oauth2TokenRefreshURL = oauth2TokenRefreshURL;
-    }
-
-    public static String getOauth2TokenRefreshGrantType() {
-        return get(mCtx).oauth2TokenRefreshGrantType;
-    }
-
-    public static void setOauth2TokenRefreshGrantType(String oauth2TokenRefreshGrantType) {
-        get(mCtx).oauth2TokenRefreshGrantType = oauth2TokenRefreshGrantType;
-    }
 }
