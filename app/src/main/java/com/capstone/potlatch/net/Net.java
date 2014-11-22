@@ -6,6 +6,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.capstone.potlatch.net.requests.RequestWithAuth;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,8 @@ public class Net {
     private RequestQueue mRequestQueue;
     private ImageLoader mImageLoader;
     private Map<String,String> globalHeaders;
+    private String oauth2TokenRefreshURL;
+    private String oauth2TokenRefreshGrantType = "refresh_token";
 
     private Net(Context context) {
         // getApplicationContext() is key, it keeps you from leaking the
@@ -56,12 +59,23 @@ public class Net {
     }
 
     public static <T> void addToQueue(Request<T> req) {
-        if (req instanceof ExtendedRequest) {
-            ExtendedRequest exReq = (ExtendedRequest) req;
+        if (req instanceof RequestWithAuth) {
+            RequestWithAuth exReq = (RequestWithAuth) req;
+
             exReq.addHeaders(getGlobalHeaders());
-            // Only set the global Oauth2 token if the request doesn't have one already specified
+
+            // Only set the global values if the request doesn't have them already specified
+
             if (exReq.getOAuth2Token() == null) {
                 exReq.setOAuth2Token(getGlobalOAuth2Token());
+            }
+
+            if (exReq.getOauth2TokenRefreshURL() == null) {
+                exReq.setOauth2TokenRefreshURL(getOauth2TokenRefreshURL());
+            }
+
+            if (exReq.getOauth2TokenRefreshGrantType() == null) {
+                exReq.setOauth2TokenRefreshGrantType(getOauth2TokenRefreshGrantType());
             }
         }
         get(mCtx).mRequestQueue.add(req);
@@ -85,5 +99,21 @@ public class Net {
 
     public static OAuth2Token getGlobalOAuth2Token() {
         return get(mCtx).oauth2Token;
+    }
+
+    public static String getOauth2TokenRefreshURL() {
+        return get(mCtx).oauth2TokenRefreshURL;
+    }
+
+    public static void setOauth2TokenRefreshURL(String oauth2TokenRefreshURL) {
+        get(mCtx).oauth2TokenRefreshURL = oauth2TokenRefreshURL;
+    }
+
+    public static String getOauth2TokenRefreshGrantType() {
+        return get(mCtx).oauth2TokenRefreshGrantType;
+    }
+
+    public static void setOauth2TokenRefreshGrantType(String oauth2TokenRefreshGrantType) {
+        get(mCtx).oauth2TokenRefreshGrantType = oauth2TokenRefreshGrantType;
     }
 }

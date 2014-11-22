@@ -13,10 +13,9 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        // Configure network singleton
-        Net.setContext(this);
         //TODO: Get the saved state and set the token header in Net.
         //TODO: Hacer un layout especial para los gifts de la sección My Gifts
+        //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
         //TODO Permitir subir imágenes
         //TODO Scalar las imágenes y guardarlas en el servidor mismo (con el id del Gift como carpeta)
 //        Net.getGlobalHeaders()
@@ -26,6 +25,10 @@ public class App extends Application {
 
         // Configure the Routes class
         Routes.baseUrl = Config.baseUrl;
+
+        // Configure network singleton
+        Net.setContext(this);
+        Net.setOauth2TokenRefreshURL(Routes.urlFor(Routes.TOKEN_PATH));
 
         /**
          * THIS IS A EXTREMELY INSECURE WAY TO ACCEPT HTTPS CERTIFICATES AS ALL OF THEM ARE ACCEPTED,

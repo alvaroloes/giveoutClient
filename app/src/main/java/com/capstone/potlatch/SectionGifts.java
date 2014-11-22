@@ -22,8 +22,8 @@ import com.capstone.potlatch.base.Config;
 import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.models.Gift;
-import com.capstone.potlatch.net.JacksonRequest;
 import com.capstone.potlatch.net.Net;
+import com.capstone.potlatch.net.requests.AuthRequest;
 import com.capstone.potlatch.utils.AwareFragment;
 import com.capstone.potlatch.utils.EndlessScrollListener;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -110,12 +110,13 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         // As this fragment state is retained, this ensures there is no memory leak
         mSearchView = null;
         mScrollListener = null;
         mAdapter = null;
         mSignInButton = null;
+
+        super.onDestroyView();
     }
 
     @Override
@@ -172,10 +173,10 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
                                    Routes.LIMIT_PARAMETER, Config.pageSize,
                                    Routes.TITLE_PARAMETER, titleFilter);
 
-        JacksonRequest<List<Gift>> req = new JacksonRequest<List<Gift>>(Request.Method.GET, url,
-                                                               new TypeReference<List<Gift>>() {},
-                                                               new RequestSuccessListener(),
-                                                               new RequestErrorListener());
+        AuthRequest<List<Gift>> req = new AuthRequest<List<Gift>>(Request.Method.GET, url,
+                                                                  new TypeReference<List<Gift>>() {},
+                                                                  new RequestSuccessListener(),
+                                                                  new RequestErrorListener());
         req.setTag(this);
         Net.addToQueue(req);
         System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));

@@ -1,14 +1,12 @@
-package com.capstone.potlatch.net;
+package com.capstone.potlatch.net.requests;
 
-import android.util.Base64;
-
-import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.capstone.potlatch.net.OAuth2Token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +18,11 @@ import java.util.Map;
 /**
  * Created by alvaro on 13/11/14.
  */
-public class JacksonRequest<T> extends Request<T> implements ExtendedRequest {
+public class JacksonRequest<T> extends Request<T> {
+
+    private String oauth2TokenRefreshURL;
+    private String oauth2TokenRefreshGrantType = "refresh_token";
+
     private final Class<T> resultClass;
     private final Response.Listener<T> listener;
     private final TypeReference<T> resultTypeReference;
@@ -29,6 +31,7 @@ public class JacksonRequest<T> extends Request<T> implements ExtendedRequest {
     private String basicAuthName;
     private String basicAuthPass;
     private OAuth2Token oauth2Token;
+    private RequestQueue requestQueueForOAuth2RefreshTokenRequest;
 
     private Map<String,String> headers = new HashMap<String, String>();
 
@@ -78,53 +81,5 @@ public class JacksonRequest<T> extends Request<T> implements ExtendedRequest {
     @Override
     protected void deliverResponse(T response) {
         listener.onResponse(response);
-    }
-
-    @Override
-    public void deliverError(VolleyError error) {
-        if (error instanceof AuthFailureError) {
-            //todo
-            System.out.println("HERE WE SHOULD CHECK THE REFRESH TOKEN");
-        }
-        super.deliverError(error);
-    }
-
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        String authHeaderVal = null;
-
-        if (oauth2Token != null) {
-            authHeaderVal = "Bearer " + oauth2Token.access_token;
-        } else if (basicAuthName != null && basicAuthPass != null) {
-            byte[] token = (basicAuthName + ":" + basicAuthPass).getBytes();
-            authHeaderVal = "Basic " + Base64.encodeToString(token, Base64.DEFAULT);
-        }
-
-        if (authHeaderVal != null) {
-            headers.put("Authorization", authHeaderVal);
-        }
-
-        return headers;
-    }
-
-    @Override
-    public void setBasicAuth(String username, String password) {
-        basicAuthName = username;
-        basicAuthPass = password;
-    }
-
-    @Override
-    public void setOAuth2Token(OAuth2Token token) {
-        oauth2Token = token;
-    }
-
-    @Override
-    public OAuth2Token getOAuth2Token() {
-        return oauth2Token;
-    }
-
-    @Override
-    public void addHeaders(Map<String, String> extraHeaders) {
-        headers.putAll(extraHeaders);
     }
 }

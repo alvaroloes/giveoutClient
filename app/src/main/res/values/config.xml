@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- 10.0.2.2 is the equivalent to localhost -->
-    <string name="local_baseUrl">https://10.0.2.2:8443/</string>
+    <!-- 10.0.2.2 is the equivalent to localhost in the emulator -->
+    <!-- 192.168.1.35 is the ip of my laptop in my local wifi. Useful when testing in a real device -->
+    <!--<string name="local_baseUrl">https://10.0.2.2:8443/</string>-->
+    <string name="local_baseUrl">https://192.168.1.35:8443/</string>
     <string name="local_basicAuthName">mobile</string>
     <string name="local_basicAuthPass" />
 
