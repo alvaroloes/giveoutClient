@@ -32,27 +32,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerFragmentSelected, AwareFragment.OnUserLogin {
-    private static final String ARG_FOR_CURRENT_USER = "FOR_CURRENT_USER";
+    public static final String ARG_FOR_CURRENT_USER = "FOR_CURRENT_USER";
 
     private List<Gift> gifts = new ArrayList<Gift>();
     private boolean dataHasBeenLoaded = false;
     private int lastLoadedDataPage = 0;
     private String lastTitleFilter;
     private boolean forCurrentUser = false;
+    private ScrollListener scrollListener;
 
-    // Non stateful members
-    private GiftsAdapter mAdapter;
-    private SearchView mSearchView;
-    private ScrollListener mScrollListener;
-    private Button mSignInButton;
-
-    public static SectionGifts newInstance(boolean forCurrentUser) {
-        SectionGifts fragment = new SectionGifts();
-        Bundle args = new Bundle();
-        args.putBoolean(ARG_FOR_CURRENT_USER, forCurrentUser);
-        fragment.setArguments(args);
-        return fragment;
+    // Members that must be cleaned in onDestroyView to avoid potential memory leaks, as this
+    // Fragment is retained
+    private static class UI {
+        GiftsAdapter adapter;
+        SearchView searchView;
+        Button signInButton;
     }
+    private UI ui;
+
+
+//    public static SectionGifts newInstance(boolean forCurrentUser) {
+//        SectionGifts fragment = new SectionGifts();
+//        Bundle args = new Bundle();
+//        args.putBoolean(ARG_FOR_CURRENT_USER, forCurrentUser);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,8 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         }
         setHasOptionsMenu(true);
         setRetainInstance(true);
+
+        scrollListener = new ScrollListener();
     }
 
     @Override
@@ -69,20 +76,20 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         inflater.inflate(R.menu.searchable_options, menu);
         // Setup the search action view
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) searchItem.getActionView();
-        mSearchView.setQueryHint(getActivity().getString(R.string.filter_by_title));
+        ui.searchView = (SearchView) searchItem.getActionView();
+        ui.searchView.setQueryHint(getActivity().getString(R.string.filter_by_title));
 
         SearchListener searchListener = new SearchListener();
-        mSearchView.setOnQueryTextListener(searchListener);
+        ui.searchView.setOnQueryTextListener(searchListener);
         MenuItemCompat.setOnActionExpandListener(searchItem, searchListener);
 
         if (lastTitleFilter != null) {
             // This is very weird. If you call "setQuery" in this layout pass, it doesn't work. It
             // needs to be delayed until the following pass.
-            mSearchView.post(new Runnable() {
+            ui.searchView.post(new Runnable() {
                 @Override
                 public void run() {
-                    mSearchView.setQuery(lastTitleFilter, false);
+                    ui.searchView.setQuery(lastTitleFilter, false);
                 }
             });
         }
@@ -91,15 +98,15 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ui = new UI();
         View v = inflater.inflate(R.layout.fragment_section_gifts, container, false);
         ListView giftList = (ListView) v.findViewById(R.id.gift_list);
-        mScrollListener = new ScrollListener();
-        mAdapter = new GiftsAdapter(getActivity(), gifts);
-        giftList.setOnScrollListener(mScrollListener);
-        giftList.setAdapter(mAdapter);
+        ui.adapter = new GiftsAdapter(getActivity(), gifts);
+        giftList.setAdapter(ui.adapter);
+        giftList.setOnScrollListener(scrollListener);
 
-        mSignInButton = (Button) v.findViewById(R.id.sign_in_button);
-        mSignInButton.setOnClickListener(new View.OnClickListener() {
+        ui.signInButton = (Button) v.findViewById(R.id.sign_in_button);
+        ui.signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogLogin.show(getFragmentManager());
@@ -111,11 +118,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     @Override
     public void onDestroyView() {
         // As this fragment state is retained, this ensures there is no memory leak
-        mSearchView = null;
-        mScrollListener = null;
-        mAdapter = null;
-        mSignInButton = null;
-
+        ui = null;
         super.onDestroyView();
     }
 
@@ -148,10 +151,10 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     private void checkUserAndLoadData() {
         if (forCurrentUser && ! State.get().isUserLoggedIn()) {
-            mSignInButton.setVisibility(View.VISIBLE);
+            ui.signInButton.setVisibility(View.VISIBLE);
             return;
         }
-        mSignInButton.setVisibility(View.GONE);
+        ui.signInButton.setVisibility(View.GONE);
         if (!dataHasBeenLoaded) {
             loadPageData(0, null);
         }
@@ -159,7 +162,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     private void loadPageData(int page, String titleFilter) {
         if (page == 0) {
-            mScrollListener.reset();
+            scrollListener.reset();
         }
 
         lastLoadedDataPage = page;
@@ -190,7 +193,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
             }
             gifts.addAll(response);
             dataHasBeenLoaded = true;
-            mAdapter.notifyDataSetChanged();
+            ui.adapter.notifyDataSetChanged();
         }
     }
 

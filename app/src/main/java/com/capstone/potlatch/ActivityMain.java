@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.capstone.potlatch.models.User;
@@ -19,20 +21,28 @@ import java.util.List;
 
 
 public class ActivityMain extends Activity implements DialogLogin.OnLoginListener {
-    private List<TitleSectionPair> sections = new ArrayList<TitleSectionPair>();
+    private SectionsAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance(false)));
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance(false)));
-        sections.add(new TitleSectionPair(getString(R.string.section_gifts), SectionGifts.newInstance(false)));
-        sections.add(new TitleSectionPair(getString(R.string.section_my_gifts), SectionGifts.newInstance(true)));
+        Bundle args;
+        List<SectionData> sectionsData = new ArrayList<SectionData>();
+
+        // Create the sections data list
+        sectionsData.add(new SectionData(getString(R.string.section_gifts), SectionGifts.class));
+        sectionsData.add(new SectionData(getString(R.string.section_gifts),SectionGifts.class));
+        sectionsData.add(new SectionData(getString(R.string.section_gifts),SectionGifts.class));
+        args = new Bundle();
+        args.putBoolean(SectionGifts.ARG_FOR_CURRENT_USER, true);
+        sectionsData.add(new SectionData(getString(R.string.section_my_gifts),SectionGifts.class, args));
+
+        adapter = new SectionsAdapter(getFragmentManager(), sectionsData);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(new SectionsAdapter(getFragmentManager()));
+        pager.setAdapter(adapter);
 
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setOnPageChangeListener(new OnSectionSelectedListener());
@@ -71,24 +81,22 @@ public class ActivityMain extends Activity implements DialogLogin.OnLoginListene
 
     @Override
     public void onLoginSuccess(User user) {
-        for (TitleSectionPair pair : sections) {
-            if (! pair.section.isVisible()) {
-                continue;
-            }
-            if (pair.section instanceof AwareFragment.OnUserLogin) {
-                ((AwareFragment.OnUserLogin) pair.section).onLoginSuccess();
+        SparseArray<Fragment> fragments = adapter.getActiveFragments();
+        for (int i = 0; i < fragments.size(); ++i) {
+            Fragment f = fragments.valueAt(i);
+            if (f instanceof AwareFragment.OnUserLogin) {
+                ((AwareFragment.OnUserLogin) f).onLoginSuccess();
             }
         }
     }
 
     @Override
     public void onLoginCanceled() {
-        for (TitleSectionPair pair : sections) {
-            if (! pair.section.isVisible()) {
-                continue;
-            }
-            if (pair.section instanceof AwareFragment.OnUserLogin) {
-                ((AwareFragment.OnUserLogin) pair.section).onLoginCanceled();
+        SparseArray<Fragment> fragments = adapter.getActiveFragments();
+        for (int i = 0; i < fragments.size(); ++i) {
+            Fragment f = fragments.valueAt(i);
+            if (f instanceof AwareFragment.OnUserLogin) {
+                ((AwareFragment.OnUserLogin) f).onLoginCanceled();
             }
         }
     }
@@ -96,43 +104,83 @@ public class ActivityMain extends Activity implements DialogLogin.OnLoginListene
     class OnSectionSelectedListener extends ViewPager.SimpleOnPageChangeListener {
         @Override
         public void onPageSelected(int position) {
-            TitleSectionPair f = sections.get(position);
-            if (f.section instanceof AwareFragment.OnViewPagerFragmentSelected) {
-                ((AwareFragment.OnViewPagerFragmentSelected) f.section).onSelected();
+            Fragment f = adapter.getActiveFragments().get(position);
+            if (f != null && f instanceof AwareFragment.OnViewPagerFragmentSelected) {
+                ((AwareFragment.OnViewPagerFragmentSelected) f).onSelected();
             }
         }
     }
 
     class SectionsAdapter extends FragmentPagerAdapter {
+        private SparseArray<Fragment> activeFragments = new SparseArray<Fragment>();
+        private final List<SectionData> sectionsData = new ArrayList<SectionData>();
 
-        public SectionsAdapter(FragmentManager fm) {
+        public SectionsAdapter(FragmentManager fm, List<SectionData> sectionsData) {
             super(fm);
+            this.sectionsData.addAll(sectionsData);
         }
 
         @Override
         public CharSequence getPageTitle(int i) {
-            return sections.get(i).title;
+            return sectionsData.get(i).title;
         }
 
         @Override
         public Fragment getItem(int i) {
-            return sections.get(i).section;
+            // In a FragmentPagerAdapter, a very good practice is to create the fragment instances
+            // HERE. Doing so, new fragment instances are not recreated if the activity has it already
+            // attached (Ending up with duplicated fragment instances).
+            // What is more, doing this is a MUST in case any fragment is retained to avoid memory leaks.
+            try {
+                SectionData sectionData = sectionsData.get(i);
+                Fragment f = sectionData.sectionClass.getConstructor().newInstance();
+                f.setArguments(sectionData.arguments);
+                return f;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         @Override
         public int getCount() {
-            return sections.size();
+            return sectionsData.size();
+        }
+
+        // With this two methods we keep track of the fragments that are alive.
+        // This allows us to send them events such us when the user is logged in, etc.
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment f = (Fragment) super.instantiateItem(container, position);
+            activeFragments.put(position, f);
+            return f;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            activeFragments.remove(position);
+        }
+
+        public SparseArray<Fragment> getActiveFragments() {
+            return activeFragments;
         }
     }
 
 }
 
-class TitleSectionPair {
+class SectionData {
     String title;
-    Fragment section;
+    Class<? extends Fragment> sectionClass;
+    Bundle arguments;
 
-    TitleSectionPair(String title, Fragment section) {
+    SectionData(String title, Class<? extends Fragment> sectionClass, Bundle arguments) {
         this.title = title;
-        this.section = section;
+        this.sectionClass = sectionClass;
+        this.arguments = arguments;
+    }
+
+    SectionData(String title, Class<? extends Fragment> sectionClass) {
+        this(title, sectionClass, null);
     }
 }

@@ -8,8 +8,7 @@ public abstract class EndlessScrollListener implements AbsListView.OnScrollListe
     private int previousTotal = 0;
     private boolean loading = true;
 
-    public EndlessScrollListener() {
-    }
+    public EndlessScrollListener() {}
 
     public EndlessScrollListener(int visibleThreshold) {
         this.visibleThreshold = visibleThreshold;
