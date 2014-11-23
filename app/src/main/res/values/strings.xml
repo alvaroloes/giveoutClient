@@ -18,5 +18,6 @@
     <string name="flag_inappropriate">Flag as inappropriate</string>
     <string name="login_title">Enter your credentials</string>
     <string name="please_login">Please sign in</string>
+    <string name="gift_unpublished">Unpublished</string>
 
 </resources>

@@ -2,8 +2,10 @@ package com.capstone.potlatch;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,18 +23,25 @@ import com.capstone.potlatch.adapters.GiftsAdapter;
 import com.capstone.potlatch.base.Config;
 import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
+import com.capstone.potlatch.dialogs.DialogConfirm;
+import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthRequest;
 import com.capstone.potlatch.utils.AwareFragment;
 import com.capstone.potlatch.utils.EndlessScrollListener;
+import com.capstone.potlatch.utils.ViewHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerFragmentSelected, AwareFragment.OnUserLogin {
+public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerFragmentSelected,
+                                                      AwareFragment.OnUserLogin,
+                                                      AwareFragment.OnDialogConfirmation {
     public static final String ARG_FOR_CURRENT_USER = "FOR_CURRENT_USER";
+    private static final String TAG_CONFIRM_INAPPROPRIATE = "TAG_CONFIRM_INAPPROPRIATE";
+    private static final String TAG_CONFIRM_DELETE = "TAG_CONFIRM_DELETE";
 
     private List<Gift> gifts = new ArrayList<Gift>();
     private boolean dataHasBeenLoaded = false;
@@ -49,15 +58,6 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         Button signInButton;
     }
     private UI ui;
-
-
-//    public static SectionGifts newInstance(boolean forCurrentUser) {
-//        SectionGifts fragment = new SectionGifts();
-//        Bundle args = new Bundle();
-//        args.putBoolean(ARG_FOR_CURRENT_USER, forCurrentUser);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,8 +100,11 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
                              Bundle savedInstanceState) {
         ui = new UI();
         View v = inflater.inflate(R.layout.fragment_section_gifts, container, false);
+
         ListView giftList = (ListView) v.findViewById(R.id.gift_list);
-        ui.adapter = new GiftsAdapter(getActivity(), gifts);
+
+        ui.adapter = forCurrentUser ? new UserGiftsAdapter(getActivity(), gifts)
+                                    : new PublicGiftsAdapter(getActivity(), gifts);
         giftList.setAdapter(ui.adapter);
         giftList.setOnScrollListener(scrollListener);
 
@@ -109,7 +112,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         ui.signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogLogin.show(getFragmentManager());
+                DialogLogin.open(getFragmentManager());
             }
         });
         return v;
@@ -149,6 +152,18 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         checkUserAndLoadData();
     }
 
+    @Override
+    public void onConfirmation(String tag, boolean confirmed) {
+        switch (tag) {
+            case TAG_CONFIRM_INAPPROPRIATE:
+                Log.d("EYYYY", "inappropriate: " + confirmed);
+                break;
+            case TAG_CONFIRM_DELETE:
+                Log.d("EYYYY", "delete: " + confirmed);
+                break;
+        }
+    }
+
     private void checkUserAndLoadData() {
         if (forCurrentUser && ! State.get().isUserLoggedIn()) {
             ui.signInButton.setVisibility(View.VISIBLE);
@@ -184,6 +199,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         Net.addToQueue(req);
         System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));
     }
+
 
     class RequestSuccessListener implements Response.Listener<List<Gift>> {
         @Override
@@ -233,6 +249,76 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         @Override
         public void loadNewPage() {
             loadPageData(lastLoadedDataPage + 1, lastTitleFilter);
+        }
+    }
+
+    class OnGiftTouchedMeListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+
+        }
+    }
+
+    class OnGiftEditListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+
+        }
+    }
+
+    class OnGiftInappropriateListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            DialogConfirm.open(getFragmentManager(),
+                               TAG_CONFIRM_INAPPROPRIATE,
+                               "Do you really want to flag this Gift as inappropriate?");
+        }
+    }
+
+    class OnGiftDeleteListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            DialogConfirm.open(getFragmentManager(),
+                               TAG_CONFIRM_DELETE,
+                               "Do you really want to delete this Gift?");
+        }
+    }
+
+    class PublicGiftsAdapter extends GiftsAdapter {
+        public PublicGiftsAdapter(Context context, List<Gift> gifts) {
+            super(context, gifts);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = super.getView(position, convertView, parent);
+
+            ViewHolder.get(v, R.id.gift_edit).setVisibility(View.GONE);
+            ViewHolder.get(v, R.id.gift_delete).setVisibility(View.GONE);
+
+            ViewHolder.get(v, R.id.gift_touch_button).setOnClickListener(new OnGiftTouchedMeListener());
+            ViewHolder.get(v, R.id.gift_inappropriate_button).setOnClickListener(new OnGiftInappropriateListener());
+
+            return v;
+        }
+    }
+
+    class UserGiftsAdapter extends GiftsAdapter {
+        public UserGiftsAdapter(Context context, List<Gift> gifts) {
+            super(context, gifts);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = super.getView(position, convertView, parent);
+
+            ViewHolder.get(v, R.id.gift_touch_button).setVisibility(View.GONE);
+            ViewHolder.get(v, R.id.gift_inappropriate_button).setVisibility(View.GONE);
+
+            ViewHolder.get(v, R.id.gift_edit).setOnClickListener(new OnGiftEditListener());
+            ViewHolder.get(v, R.id.gift_delete).setOnClickListener(new OnGiftDeleteListener());
+
+            return v;
         }
     }
 }

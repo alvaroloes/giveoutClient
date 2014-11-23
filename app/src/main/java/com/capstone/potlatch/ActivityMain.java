@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.capstone.potlatch.dialogs.DialogConfirm;
+import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.utils.AwareFragment;
 
@@ -20,8 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ActivityMain extends Activity implements DialogLogin.OnLoginListener {
+public class ActivityMain extends Activity implements DialogLogin.OnLoginListener, DialogConfirm.OnDialogConfirmListener {
     private SectionsAdapter adapter;
+    private ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,7 @@ public class ActivityMain extends Activity implements DialogLogin.OnLoginListene
 
         adapter = new SectionsAdapter(getFragmentManager(), sectionsData);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
@@ -64,7 +67,7 @@ public class ActivityMain extends Activity implements DialogLogin.OnLoginListene
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch(id) {
+        switch (id) {
             case R.id.action_settings:
                 Intent i = new Intent(this, ActivitySettings.class);
                 startActivity(i);
@@ -98,6 +101,14 @@ public class ActivityMain extends Activity implements DialogLogin.OnLoginListene
             if (f instanceof AwareFragment.OnUserLogin) {
                 ((AwareFragment.OnUserLogin) f).onLoginCanceled();
             }
+        }
+    }
+
+    @Override
+    public void onConfirmationFinish(String tag, boolean confirmed) {
+        Fragment f = adapter.getActiveFragments().get(pager.getCurrentItem());
+        if (f != null && f instanceof AwareFragment.OnDialogConfirmation) {
+            ((AwareFragment.OnDialogConfirmation) f).onConfirmation(tag, confirmed);
         }
     }
 

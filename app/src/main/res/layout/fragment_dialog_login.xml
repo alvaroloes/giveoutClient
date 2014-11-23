@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.capstone.potlatch.DialogLogin"
+    tools:context="com.capstone.potlatch.dialogs.DialogLogin"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/activity_horizontal_margin"

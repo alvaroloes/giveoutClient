@@ -14,4 +14,7 @@ public interface AwareFragment {
         public void onLoginSuccess();
         public void onLoginCanceled();
     }
+    interface OnDialogConfirmation {
+        public void onConfirmation(String tag, boolean confirmed);
+    }
 }

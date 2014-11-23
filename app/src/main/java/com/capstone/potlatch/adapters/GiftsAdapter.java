@@ -10,6 +10,8 @@ import com.capstone.potlatch.R;
 import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.utils.ViewHolder;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.List;
 
 /**
@@ -29,8 +31,12 @@ public class GiftsAdapter extends ArrayAdapter<Gift> {
         }
 
         Gift g = getItem(position);
+        String giftChainName = g.giftChainName;
+        if (StringUtils.isBlank(giftChainName)) {
+            giftChainName = getContext().getString(R.string.gift_unpublished);
+        }
 
-        ((TextView) ViewHolder.get(v, R.id.gift_title)).setText(g.title);
+        ((TextView) ViewHolder.get(v, R.id.gift_title)).setText(giftChainName);
         ((TextView) ViewHolder.get(v, R.id.gift_chain_name)).setText(g.giftChainName);
         ((TextView) ViewHolder.get(v, R.id.gift_description)).setText(g.description);
         ((TextView) ViewHolder.get(v, R.id.gift_touches_count)).setText(String.valueOf(g.touchedByUserIds.size()));

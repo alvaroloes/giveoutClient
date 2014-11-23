@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.capstone.potlatch.base.State;
+import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.models.User;
 
 
@@ -18,7 +19,7 @@ public class ActivityCreateGift extends Activity implements DialogLogin.OnLoginL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_gift);
         if (! State.get().isUserLoggedIn()) {
-            DialogLogin.show(getFragmentManager());
+            DialogLogin.open(getFragmentManager());
         }
     }
 

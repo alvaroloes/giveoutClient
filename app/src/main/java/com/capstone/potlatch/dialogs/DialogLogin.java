@@ -1,4 +1,4 @@
-package com.capstone.potlatch;
+package com.capstone.potlatch.dialogs;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.capstone.potlatch.R;
 import com.capstone.potlatch.base.Config;
 import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
@@ -24,7 +25,7 @@ import com.capstone.potlatch.net.requests.OAuth2TokenRequest;
 
 /**
  * Activities that contain this fragment must implement the
- * {@link com.capstone.potlatch.DialogLogin.OnLoginListener} interface
+ * {@link DialogLogin.OnLoginListener} interface
  * to handle interaction events.
  */
 public class DialogLogin extends DialogFragment {
@@ -34,7 +35,7 @@ public class DialogLogin extends DialogFragment {
     private EditText mUsername;
     private EditText mPassword;
 
-    public static DialogLogin show(FragmentManager fragmentManager) {
+    public static DialogLogin open(FragmentManager fragmentManager) {
         DialogLogin dialogLogin = new DialogLogin();
         dialogLogin.show(fragmentManager, tag);
         return dialogLogin;
@@ -111,19 +112,6 @@ public class DialogLogin extends DialogFragment {
         OAuth2TokenRequest req = new OAuth2TokenRequest(url, username, password, new RequestSuccessListener(), new RequestErrorListener());
         req.setBasicAuth(Config.basicAuthName, Config.basicAuthPass);
         Net.addToQueue(req);
-//        JacksonRequest<OAuth2Token> req = new JacksonRequest<OAuth2Token>(Request.Method.POST, url,
-//                                                              OAuth2Token.class,
-//                                                              new RequestSuccessListener(),
-//                                                              new RequestErrorListener()) {
-//            @Override
-//            protected Map<String, String> getParams() throws AuthFailureError {
-//                Map<String,String> params = new HashMap<String, String>();
-//                params.put("grant_type", "password");
-//                params.put("username", username);
-//                params.put("password", password);
-//                return params;
-//            }
-//        };
     }
 
     class RequestSuccessListener implements Response.Listener<OAuth2Token> {
@@ -143,7 +131,6 @@ public class DialogLogin extends DialogFragment {
         @Override
         public void onErrorResponse(VolleyError error) {
             Toast.makeText(getActivity(), "Login error", Toast.LENGTH_SHORT).show();
-            error.printStackTrace();
         }
     }
 
