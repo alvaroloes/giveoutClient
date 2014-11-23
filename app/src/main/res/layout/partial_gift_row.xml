@@ -2,25 +2,37 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:paddingTop="@dimen/gift_padding"
+    android:paddingBottom="@dimen/gift_padding"
     android:gravity="top">
 
-    <TextView
-        android:id="@+id/gift_title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true" />
-    <TextView
-        android:id="@+id/gift_chain_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true" />
+        android:id="@+id/gift_title_line"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true">
+        <TextView
+            android:id="@+id/gift_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="2"/>
+        <TextView
+            android:id="@+id/gift_chain_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"/>
+    </LinearLayout>
 
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/gift_image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/gift_image_height"
         android:scaleType="fitCenter"
-        android:layout_below="@+id/gift_title" />
+        android:layout_below="@+id/gift_title_line" />
 
     <TextView
         android:id="@+id/gift_touches_count"

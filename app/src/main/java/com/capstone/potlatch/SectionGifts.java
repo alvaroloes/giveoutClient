@@ -154,6 +154,10 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     @Override
     public void onConfirmation(String tag, boolean confirmed) {
+        if (! confirmed) {
+            return;
+        }
+
         switch (tag) {
             case TAG_CONFIRM_INAPPROPRIATE:
                 Log.d("EYYYY", "inappropriate: " + confirmed);
@@ -224,7 +228,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         @Override
         public boolean onQueryTextSubmit(String query) {
             loadPageData(0, query);
-            return true;
+            return false;
         }
 
         @Override

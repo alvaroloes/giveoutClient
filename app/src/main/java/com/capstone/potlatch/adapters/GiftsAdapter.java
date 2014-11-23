@@ -36,8 +36,8 @@ public class GiftsAdapter extends ArrayAdapter<Gift> {
             giftChainName = getContext().getString(R.string.gift_unpublished);
         }
 
-        ((TextView) ViewHolder.get(v, R.id.gift_title)).setText(giftChainName);
-        ((TextView) ViewHolder.get(v, R.id.gift_chain_name)).setText(g.giftChainName);
+        ((TextView) ViewHolder.get(v, R.id.gift_title)).setText(g.title);
+        ((TextView) ViewHolder.get(v, R.id.gift_chain_name)).setText(giftChainName);
         ((TextView) ViewHolder.get(v, R.id.gift_description)).setText(g.description);
         ((TextView) ViewHolder.get(v, R.id.gift_touches_count)).setText(String.valueOf(g.touchedByUserIds.size()));
 
