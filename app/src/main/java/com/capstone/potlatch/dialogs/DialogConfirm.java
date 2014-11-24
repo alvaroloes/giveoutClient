@@ -3,7 +3,6 @@ package com.capstone.potlatch.dialogs;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,7 +13,7 @@ import android.os.Bundle;
  * {@link com.capstone.potlatch.dialogs.DialogConfirm.OnDialogConfirmListener} interface
  * to handle interaction events.
  */
-public class DialogConfirm extends DialogFragment {
+public class DialogConfirm extends BaseRetainedDialog {
     private static final String ARG_TEXT = "ARG_TEXT";
 
     private String text;
@@ -47,7 +46,7 @@ public class DialogConfirm extends DialogFragment {
                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       mListener.onConfirmationFinish(getTag(), true);
+                       mListener.onConfirmationFinish(DialogConfirm.this, getTag(), true);
                        mListener = null; // To avoid calling it again in onDismiss
                    }
                })
@@ -77,7 +76,7 @@ public class DialogConfirm extends DialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         if (mListener != null) {
-            mListener.onConfirmationFinish(getTag(), false);
+            mListener.onConfirmationFinish(this, getTag(), false);
         }
     }
 
@@ -88,7 +87,7 @@ public class DialogConfirm extends DialogFragment {
      * activity.
      */
     public interface OnDialogConfirmListener {
-        public void onConfirmationFinish(String tag, boolean confirmed);
+        public void onConfirmationFinish(BaseRetainedDialog dialogFragment, String tag, boolean confirmed);
     }
 
 }

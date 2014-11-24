@@ -19,5 +19,8 @@
     <string name="login_title">Enter your credentials</string>
     <string name="please_login">Please sign in</string>
     <string name="gift_unpublished">Unpublished</string>
+    <string name="confirm_flat_inappropriate">Do you really want to <b>flag</b> this Gift as inappropriate?</string>
+    <string name="confirm_unflag_inappropriate">Do you really want to <b>unflag</b> this Gift as inappropriate?</string>
+    <string name="confirm_delete_gift">Do you really want to delete this Gift?</string>
 
 </resources>

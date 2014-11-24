@@ -1,7 +1,6 @@
 package com.capstone.potlatch.dialogs;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.capstone.potlatch.R;
@@ -20,6 +20,7 @@ import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.OAuth2Token;
+import com.capstone.potlatch.net.requests.AuthRequest;
 import com.capstone.potlatch.net.requests.OAuth2TokenRequest;
 
 
@@ -28,14 +29,17 @@ import com.capstone.potlatch.net.requests.OAuth2TokenRequest;
  * {@link DialogLogin.OnLoginListener} interface
  * to handle interaction events.
  */
-public class DialogLogin extends DialogFragment {
-    private static final String tag = "DialogLogin";
-
+public class DialogLogin extends BaseRetainedDialog {
     private OnLoginListener mListener;
-    private EditText mUsername;
-    private EditText mPassword;
 
-    public static DialogLogin open(FragmentManager fragmentManager) {
+    class UI {
+        private EditText username;
+        private EditText password;
+    }
+
+    private UI ui;
+
+    public static DialogLogin open(FragmentManager fragmentManager, String tag) {
         DialogLogin dialogLogin = new DialogLogin();
         dialogLogin.show(fragmentManager, tag);
         return dialogLogin;
@@ -49,11 +53,12 @@ public class DialogLogin extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ui = new UI();
         getDialog().setTitle(getActivity().getString(R.string.login_title));
         View v = inflater.inflate(R.layout.fragment_dialog_login, container, false);
 
-        mUsername = (EditText) v.findViewById(R.id.login_username);
-        mPassword = (EditText) v.findViewById(R.id.login_password);
+        ui.username = (EditText) v.findViewById(R.id.login_username);
+        ui.password = (EditText) v.findViewById(R.id.login_password);
 
         v.findViewById(R.id.login_accept_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +68,12 @@ public class DialogLogin extends DialogFragment {
         });
 
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        ui = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -85,22 +96,22 @@ public class DialogLogin extends DialogFragment {
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         if (mListener != null && ! State.get().isUserLoggedIn()) {
-            mListener.onLoginCanceled();
+            mListener.onLoginFinish(this, getTag(), false);
         }
     }
 
     void doLogin() {
-        final String username = String.valueOf(mUsername.getText());
-        final String password = String.valueOf(mPassword.getText());
+        final String username = String.valueOf(ui.username.getText());
+        final String password = String.valueOf(ui.password.getText());
         boolean error = false;
 
         if (username.length() == 0) {
-            mUsername.setError("Please enter a user name");
+            ui.username.setError("Please enter a user name");
             error = true;
         }
 
         if (password.length() == 0) {
-            mPassword.setError("Please enter a password");
+            ui.password.setError("Please enter a password");
             error = true;
         }
 
@@ -109,21 +120,30 @@ public class DialogLogin extends DialogFragment {
         }
 
         String url = Routes.urlFor(Routes.TOKEN_PATH);
-        OAuth2TokenRequest req = new OAuth2TokenRequest(url, username, password, new RequestSuccessListener(), new RequestErrorListener());
+        OAuth2TokenRequest req = new OAuth2TokenRequest(url, username, password, new RequestLoginSuccessListener(), new RequestErrorListener());
         req.setBasicAuth(Config.basicAuthName, Config.basicAuthPass);
         Net.addToQueue(req);
     }
 
-    class RequestSuccessListener implements Response.Listener<OAuth2Token> {
+    class RequestLoginSuccessListener implements Response.Listener<OAuth2Token> {
         @Override
         public void onResponse(OAuth2Token response) {
             State.get().setOauth2Token(response);
             Net.setGlobalOAuth2Token(response);
 
-            if (mListener != null) {
-                mListener.onLoginSuccess(State.get().getUser());
-                dismiss();
-            }
+            // Get user data
+            String url = Routes.urlFor(Routes.CURRENT_USER_PATH);
+            AuthRequest<User> req = new AuthRequest<User>(Request.Method.GET, url, User.class, new Response.Listener<User>() {
+                @Override
+                public void onResponse(User response) {
+                    State.get().setUser(response);
+                    if (mListener != null) {
+                        mListener.onLoginFinish(DialogLogin.this, getTag(), true);
+                        dismiss();
+                    }
+                }
+            }, new RequestErrorListener());
+            Net.addToQueue(req);
         }
     }
 
@@ -141,8 +161,7 @@ public class DialogLogin extends DialogFragment {
      * activity.
      */
     public interface OnLoginListener {
-        public void onLoginSuccess(User user);
-        public void onLoginCanceled();
+        public void onLoginFinish(BaseRetainedDialog dialogFragment, String tag, boolean success);
     }
 
 }

@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,17 +17,20 @@ import android.widget.SearchView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.capstone.potlatch.adapters.GiftsAdapter;
+import com.capstone.potlatch.base.BaseActivity;
 import com.capstone.potlatch.base.Config;
 import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
+import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogConfirm;
 import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.models.Gift;
+import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthRequest;
 import com.capstone.potlatch.utils.AwareFragment;
+import com.capstone.potlatch.utils.Copier;
 import com.capstone.potlatch.utils.EndlessScrollListener;
 import com.capstone.potlatch.utils.ViewHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,8 +42,11 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
                                                       AwareFragment.OnUserLogin,
                                                       AwareFragment.OnDialogConfirmation {
     public static final String ARG_FOR_CURRENT_USER = "FOR_CURRENT_USER";
-    private static final String TAG_CONFIRM_INAPPROPRIATE = "TAG_CONFIRM_INAPPROPRIATE";
-    private static final String TAG_CONFIRM_DELETE = "TAG_CONFIRM_DELETE";
+
+    private static final String TAG_ACTION_LOGIN = "SectionGifts - TAG_ACTION_LOGIN";
+    private static final String TAG_ACTION_INAPPROPRIATE = "SectionGifts - TAG_ACTION_INAPPROPRIATE";
+    private static final String TAG_ACTION_DELETE = "SectionGifts - TAG_ACTION_DELETE";
+    private static final String TAG_ACTION_TOUCH = "SectionGifts - TAG_ACTION_TOUCH";
 
     private List<Gift> gifts = new ArrayList<Gift>();
     private boolean dataHasBeenLoaded = false;
@@ -49,6 +54,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     private String lastTitleFilter;
     private boolean forCurrentUser = false;
     private ScrollListener scrollListener;
+    private Copier copier = new Copier();
 
     // Members that must be cleaned in onDestroyView to avoid potential memory leaks, as this
     // Fragment is retained
@@ -112,7 +118,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         ui.signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogLogin.open(getFragmentManager());
+                DialogLogin.open(getFragmentManager(), TAG_ACTION_LOGIN);
             }
         });
         return v;
@@ -143,27 +149,52 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     }
 
     @Override
-    public void onLoginSuccess() {
-        checkUserAndLoadData();
+    public void onLogin(BaseRetainedDialog dialogFragment, String tag, boolean success) {
+        ui.adapter.notifyDataSetChanged();
+        if (!success)  {
+            return;
+        }
+
+        switch(tag) {
+            case TAG_ACTION_LOGIN:
+                checkUserAndLoadData();
+                break;
+            case TAG_ACTION_INAPPROPRIATE:
+            case TAG_ACTION_DELETE:
+            case TAG_ACTION_TOUCH:
+                doAction(dialogFragment.<Gift>getData(), tag);
+                break;
+
+        }
     }
 
     @Override
-    public void onLoginCanceled() {
-        checkUserAndLoadData();
-    }
-
-    @Override
-    public void onConfirmation(String tag, boolean confirmed) {
+    public void onConfirmation(BaseRetainedDialog dialogFragment, String tag, boolean confirmed) {
         if (! confirmed) {
             return;
         }
 
         switch (tag) {
-            case TAG_CONFIRM_INAPPROPRIATE:
-                Log.d("EYYYY", "inappropriate: " + confirmed);
+            case TAG_ACTION_INAPPROPRIATE:
+            case TAG_ACTION_DELETE:
+                if (State.get().isUserLoggedIn()) {
+                    doAction(dialogFragment.<Gift>getData(), tag);
+                    return;
+                }
+                DialogLogin.open(getFragmentManager(), tag)
+                           .setData(dialogFragment.getData());
                 break;
-            case TAG_CONFIRM_DELETE:
-                Log.d("EYYYY", "delete: " + confirmed);
+        }
+    }
+
+    private void doAction(Gift gift, String tag) {
+        switch (tag) {
+            case TAG_ACTION_INAPPROPRIATE:
+            case TAG_ACTION_TOUCH:
+                flagOrTouch(gift, false);
+                break;
+            case TAG_ACTION_DELETE:
+                delete(gift);
                 break;
         }
     }
@@ -195,17 +226,49 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
                                    Routes.LIMIT_PARAMETER, Config.pageSize,
                                    Routes.TITLE_PARAMETER, titleFilter);
 
-        AuthRequest<List<Gift>> req = new AuthRequest<List<Gift>>(Request.Method.GET, url,
+        AuthRequest<List<Gift>> req = new AuthRequest<>(Request.Method.GET, url,
                                                                   new TypeReference<List<Gift>>() {},
-                                                                  new RequestSuccessListener(),
-                                                                  new RequestErrorListener());
+                                                                  new RequestLoadPageSuccessListener(),
+                                                                  ((BaseActivity) getActivity()).getErrorListener(false));
         req.setTag(this);
         Net.addToQueue(req);
         System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));
     }
 
+    private void flagOrTouch(Gift gift, boolean touch) {
+        User user = State.get().getUser();
+        String basePath = touch ? Routes.GIFTS_TOUCH_PATH
+                                : Routes.GIFTS_INAPPROPRIATE_PATH;
 
-    class RequestSuccessListener implements Response.Listener<List<Gift>> {
+        String url;
+        if ((touch && gift.touchedBy(user)) ||
+            (!touch && gift.inappropriateBy(user))) {
+            url = Routes.urlFor(basePath,
+                                "id", gift.id,
+                                Routes.REGRET_PARAMETER, true);
+        } else {
+            url = Routes.urlFor(basePath, "id", gift.id);
+        }
+
+        AuthRequest<Gift> req = new AuthRequest<>(Request.Method.PUT, url, Gift.class,
+                                                      new RequestUpdateOrDeleteSuccessListener(gift),
+                                                      ((BaseActivity) getActivity()).getErrorListener(true));
+        req.setTag(this);
+        Net.addToQueue(req);
+    }
+
+    private void delete(Gift gift) {
+        String url = Routes.urlFor(Routes.GIFTS_ID_PATH, "id", gift.id);
+        AuthRequest<Gift> req = new AuthRequest<>(Request.Method.DELETE, url, Gift.class,
+                new RequestUpdateOrDeleteSuccessListener(gift),
+                ((BaseActivity) getActivity()).getErrorListener(true));
+        req.setTag(this);
+        Net.addToQueue(req);
+    }
+
+    //////////////// Requests listeners ////////////////////
+
+    class RequestLoadPageSuccessListener implements Response.Listener<List<Gift>> {
         @Override
         public void onResponse(List<Gift> response) {
             if (lastLoadedDataPage == 0) {
@@ -217,12 +280,24 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         }
     }
 
-    class RequestErrorListener implements Response.ErrorListener {
+    class RequestUpdateOrDeleteSuccessListener implements Response.Listener<Gift> {
+        private Gift originalGift;
+
+        RequestUpdateOrDeleteSuccessListener(Gift originalGift) {
+            this.originalGift = originalGift;
+        }
+
         @Override
-        public void onErrorResponse(VolleyError error) {
-            error.printStackTrace();
+        public void onResponse(Gift response) {
+            if (response == null) { // The gift was deleted
+                ui.adapter.remove(originalGift);
+            } else {
+                copier.copyProperties(originalGift, response);
+            }
+            ui.adapter.notifyDataSetChanged();
         }
     }
+    //////////////// Other listeners ////////////////////
 
     class SearchListener implements SearchView.OnQueryTextListener, MenuItemCompat.OnActionExpandListener {
         @Override
@@ -257,13 +332,30 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     }
 
     class OnGiftTouchedMeListener implements View.OnClickListener {
+        private Gift gift;
+
+        OnGiftTouchedMeListener(Gift gift) {
+            this.gift = gift;
+        }
+
         @Override
         public void onClick(View v) {
-
+            if (State.get().isUserLoggedIn()) {
+                flagOrTouch(gift, true);
+                return;
+            }
+            DialogLogin.open(getFragmentManager(), TAG_ACTION_TOUCH)
+                       .setData(gift);
         }
     }
 
     class OnGiftEditListener implements View.OnClickListener {
+        private Gift gift;
+
+        OnGiftEditListener(Gift gift) {
+            this.gift = gift;
+        }
+
         @Override
         public void onClick(View v) {
 
@@ -271,22 +363,39 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     }
 
     class OnGiftInappropriateListener implements View.OnClickListener {
+        private Gift gift;
+
+        OnGiftInappropriateListener(Gift gift) {
+            this.gift = gift;
+        }
+
         @Override
         public void onClick(View v) {
-            DialogConfirm.open(getFragmentManager(),
-                               TAG_CONFIRM_INAPPROPRIATE,
-                               "Do you really want to flag this Gift as inappropriate?");
+            String text = getResources().getString(R.string.confirm_flat_inappropriate);
+            if (gift.inappropriateBy(State.get().getUser())) {
+                text = getResources().getString(R.string.confirm_unflag_inappropriate);
+            }
+            DialogConfirm.open(getFragmentManager(), TAG_ACTION_INAPPROPRIATE, text)
+                         .setData(gift);
         }
     }
 
     class OnGiftDeleteListener implements View.OnClickListener {
+        private Gift gift;
+
+        OnGiftDeleteListener(Gift gift) {
+            this.gift = gift;
+        }
+
         @Override
         public void onClick(View v) {
-            DialogConfirm.open(getFragmentManager(),
-                               TAG_CONFIRM_DELETE,
-                               "Do you really want to delete this Gift?");
+            DialogConfirm.open(getFragmentManager(), TAG_ACTION_DELETE,
+                               getResources().getString(R.string.confirm_delete_gift))
+                         .setData(gift);
         }
     }
+
+    //////////////// Adapters ////////////////////
 
     class PublicGiftsAdapter extends GiftsAdapter {
         public PublicGiftsAdapter(Context context, List<Gift> gifts) {
@@ -296,12 +405,20 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = super.getView(position, convertView, parent);
+            Gift gift = getItem(position);
 
             ViewHolder.get(v, R.id.gift_edit).setVisibility(View.GONE);
             ViewHolder.get(v, R.id.gift_delete).setVisibility(View.GONE);
 
-            ViewHolder.get(v, R.id.gift_touch_button).setOnClickListener(new OnGiftTouchedMeListener());
-            ViewHolder.get(v, R.id.gift_inappropriate_button).setOnClickListener(new OnGiftInappropriateListener());
+            View touchButton = ViewHolder.get(v, R.id.gift_touch_button);
+            View inappButton = ViewHolder.get(v, R.id.gift_inappropriate_button);
+
+            touchButton.setOnClickListener(new OnGiftTouchedMeListener(gift));
+            inappButton.setOnClickListener(new OnGiftInappropriateListener(gift));
+
+            User user = State.get().getUser();
+            touchButton.setSelected(gift.touchedBy(user));
+            inappButton.setSelected(gift.inappropriateBy(user));
 
             return v;
         }
@@ -319,8 +436,8 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
             ViewHolder.get(v, R.id.gift_touch_button).setVisibility(View.GONE);
             ViewHolder.get(v, R.id.gift_inappropriate_button).setVisibility(View.GONE);
 
-            ViewHolder.get(v, R.id.gift_edit).setOnClickListener(new OnGiftEditListener());
-            ViewHolder.get(v, R.id.gift_delete).setOnClickListener(new OnGiftDeleteListener());
+            ViewHolder.get(v, R.id.gift_edit).setOnClickListener(new OnGiftEditListener(getItem(position)));
+            ViewHolder.get(v, R.id.gift_delete).setOnClickListener(new OnGiftDeleteListener(getItem(position)));
 
             return v;
         }

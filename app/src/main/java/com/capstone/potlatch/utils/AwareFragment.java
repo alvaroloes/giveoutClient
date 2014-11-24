@@ -1,5 +1,7 @@
 package com.capstone.potlatch.utils;
 
+import com.capstone.potlatch.dialogs.BaseRetainedDialog;
+
 /**
  * Created by alvaro on 20/11/14.
  *
@@ -11,10 +13,9 @@ public interface AwareFragment {
         public void onSelected();
     }
     interface OnUserLogin {
-        public void onLoginSuccess();
-        public void onLoginCanceled();
+        public void onLogin(BaseRetainedDialog dialogFragment, String tag, boolean success);
     }
     interface OnDialogConfirmation {
-        public void onConfirmation(String tag, boolean confirmed);
+        public void onConfirmation(BaseRetainedDialog dialogFragment, String tag, boolean confirmed);
     }
 }

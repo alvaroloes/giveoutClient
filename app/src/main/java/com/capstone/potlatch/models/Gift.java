@@ -14,7 +14,15 @@ public class Gift {
     public String description;
     public long giftChainId;
     public String giftChainName;
-//    public User user;
+    public User user;
     public List<Long> touchedByUserIds;
     public List<Long> markedInappropriateByUserIds;
+
+    public boolean touchedBy(User user) {
+        return user != null && touchedByUserIds.contains(user.id);
+    }
+
+    public boolean inappropriateBy(User user) {
+        return user != null && markedInappropriateByUserIds.contains(user.id);
+    }
 }

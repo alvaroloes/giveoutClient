@@ -1,25 +1,25 @@
 package com.capstone.potlatch;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.capstone.potlatch.base.BaseActivity;
 import com.capstone.potlatch.base.State;
+import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogLogin;
-import com.capstone.potlatch.models.User;
 
 
-public class ActivityCreateGift extends Activity implements DialogLogin.OnLoginListener {
+public class ActivityCreateGift extends BaseActivity implements DialogLogin.OnLoginListener {
+    private static final String TAG_LOGIN = "ActivityCreateGift - TAG_LOGIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_gift);
         if (! State.get().isUserLoggedIn()) {
-            DialogLogin.open(getFragmentManager());
+            DialogLogin.open(getFragmentManager(), TAG_LOGIN);
         }
     }
 
@@ -50,12 +50,7 @@ public class ActivityCreateGift extends Activity implements DialogLogin.OnLoginL
     }
 
     @Override
-    public void onLoginSuccess(User user) {
-        Log.d(this.getClass().getName(), "Login success");
-    }
+    public void onLoginFinish(BaseRetainedDialog dialogFragment, String tag, boolean success) {
 
-    @Override
-    public void onLoginCanceled() {
-        Log.d(this.getClass().getName(), "Login canceled");
     }
 }

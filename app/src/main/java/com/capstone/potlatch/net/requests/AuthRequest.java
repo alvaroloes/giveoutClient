@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by alvaro on 13/11/14.
  */
-public class AuthRequest<T> extends JacksonRequest<T> implements RequestWithAuth {
+public class AuthRequest<T> extends BaseJacksonRequest<T> implements RequestWithAuth {
     private String basicAuthName;
     private String basicAuthPass;
     private OAuth2Token oauth2Token;

@@ -1,6 +1,5 @@
 package com.capstone.potlatch;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -13,16 +12,17 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.capstone.potlatch.base.BaseActivity;
+import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogConfirm;
 import com.capstone.potlatch.dialogs.DialogLogin;
-import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.utils.AwareFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ActivityMain extends Activity implements DialogLogin.OnLoginListener, DialogConfirm.OnDialogConfirmListener {
+public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginListener, DialogConfirm.OnDialogConfirmListener {
     private SectionsAdapter adapter;
     private ViewPager pager;
 
@@ -83,32 +83,25 @@ public class ActivityMain extends Activity implements DialogLogin.OnLoginListene
     }
 
     @Override
-    public void onLoginSuccess(User user) {
-        SparseArray<Fragment> fragments = adapter.getActiveFragments();
-        for (int i = 0; i < fragments.size(); ++i) {
-            Fragment f = fragments.valueAt(i);
-            if (f instanceof AwareFragment.OnUserLogin) {
-                ((AwareFragment.OnUserLogin) f).onLoginSuccess();
-            }
+    public void onLoginFinish(BaseRetainedDialog dialogFragment, String tag, boolean success) {
+        Fragment f = adapter.getActiveFragments().get(pager.getCurrentItem());
+        if (f instanceof AwareFragment.OnUserLogin) {
+            ((AwareFragment.OnUserLogin) f).onLogin(dialogFragment, tag, success);
         }
+//        SparseArray<Fragment> fragments = adapter.getActiveFragments();
+//        for (int i = 0; i < fragments.size(); ++i) {
+//            Fragment f = fragments.valueAt(i);
+//            if (f instanceof AwareFragment.OnUserLogin) {
+//                ((AwareFragment.OnUserLogin) f).onLogin(dialogFragment, tag, success);
+//            }
+//        }
     }
 
     @Override
-    public void onLoginCanceled() {
-        SparseArray<Fragment> fragments = adapter.getActiveFragments();
-        for (int i = 0; i < fragments.size(); ++i) {
-            Fragment f = fragments.valueAt(i);
-            if (f instanceof AwareFragment.OnUserLogin) {
-                ((AwareFragment.OnUserLogin) f).onLoginCanceled();
-            }
-        }
-    }
-
-    @Override
-    public void onConfirmationFinish(String tag, boolean confirmed) {
+    public void onConfirmationFinish(BaseRetainedDialog dialogFragment, String tag, boolean confirmed) {
         Fragment f = adapter.getActiveFragments().get(pager.getCurrentItem());
         if (f != null && f instanceof AwareFragment.OnDialogConfirmation) {
-            ((AwareFragment.OnDialogConfirmation) f).onConfirmation(tag, confirmed);
+            ((AwareFragment.OnDialogConfirmation) f).onConfirmation(dialogFragment, tag, confirmed);
         }
     }
 

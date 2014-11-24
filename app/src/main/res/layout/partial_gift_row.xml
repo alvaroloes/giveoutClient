@@ -58,7 +58,7 @@
             android:id="@+id/gift_touch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/btn_star"
+            android:src="@drawable/btn_touch"
             android:contentDescription="@string/gift_touched_me" />
         <ImageButton
             android:id="@+id/gift_delete"

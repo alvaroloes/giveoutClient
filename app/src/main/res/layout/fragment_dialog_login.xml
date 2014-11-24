@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:hint="@string/username"
         android:ems="10"
-        android:id="@+id/login_username"/>
+        android:id="@+id/login_username"
+        android:text="prueba"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -22,7 +23,8 @@
         android:hint="@string/password"
         android:inputType="textPassword"
         android:ems="10"
-        android:id="@+id/login_password"/>
+        android:id="@+id/login_password"
+        android:text="demodemo"/>
 
     <Button
         android:layout_width="wrap_content"

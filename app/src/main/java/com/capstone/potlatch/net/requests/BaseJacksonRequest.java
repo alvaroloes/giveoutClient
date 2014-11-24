@@ -18,15 +18,17 @@ import java.util.Map;
 /**
  * Created by alvaro on 13/11/14.
  */
-public class JacksonRequest<T> extends Request<T> {
+public class BaseJacksonRequest<T> extends Request<T> {
 
     private String oauth2TokenRefreshURL;
     private String oauth2TokenRefreshGrantType = "refresh_token";
 
     private final Class<T> resultClass;
-    private final Response.Listener<T> listener;
     private final TypeReference<T> resultTypeReference;
     private final JavaType resultJavaType;
+
+    private Response.Listener<T> listener;
+    private Response.ErrorListener errorListener;
 
     private String basicAuthName;
     private String basicAuthPass;
@@ -35,7 +37,7 @@ public class JacksonRequest<T> extends Request<T> {
 
     private Map<String,String> headers = new HashMap<String, String>();
 
-    public JacksonRequest(int method, String url, TypeReference<T> resultTypeReference, Response.Listener<T> listener, Response.ErrorListener errorListener) {
+    public BaseJacksonRequest(int method, String url, TypeReference<T> resultTypeReference, Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.resultTypeReference = resultTypeReference;
         this.resultJavaType = null;
@@ -43,7 +45,7 @@ public class JacksonRequest<T> extends Request<T> {
         this.listener = listener;
     }
 
-    public JacksonRequest(int method, String url, JavaType resultJavaType, Response.Listener<T> listener, Response.ErrorListener errorListener) {
+    public BaseJacksonRequest(int method, String url, JavaType resultJavaType, Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.resultTypeReference = null;
         this.resultJavaType = resultJavaType;
@@ -51,7 +53,7 @@ public class JacksonRequest<T> extends Request<T> {
         this.listener = listener;
     }
 
-    public JacksonRequest(int method, String url, Class<T> resultClass, Response.Listener<T> listener, Response.ErrorListener errorListener) {
+    public BaseJacksonRequest(int method, String url, Class<T> resultClass, Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
         this.resultTypeReference = null;
         this.resultJavaType = null;
@@ -64,13 +66,15 @@ public class JacksonRequest<T> extends Request<T> {
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         ObjectMapper om = new ObjectMapper();
         try {
-            T res;
-            if (this.resultTypeReference != null) {
-                res = om.readValue(response.data, this.resultTypeReference);
-            } else if (this.resultJavaType != null) {
-                res = om.readValue(response.data, this.resultJavaType);
-            } else {
-                res = om.readValue(response.data, this.resultClass);
+            T res = null;
+            if (response.data != null && response.data.length > 0) {
+                if (this.resultTypeReference != null) {
+                    res = om.readValue(response.data, this.resultTypeReference);
+                } else if (this.resultJavaType != null) {
+                    res = om.readValue(response.data, this.resultJavaType);
+                } else {
+                    res = om.readValue(response.data, this.resultClass);
+                }
             }
             return Response.success(res, HttpHeaderParser.parseCacheHeaders(response));
         } catch (IOException e) {
