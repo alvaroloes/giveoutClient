@@ -134,7 +134,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     @Override
     public void onResume() {
         super.onResume();
-        checkUserAndLoadData();
+        refreshData();
     }
 
     @Override
@@ -145,7 +145,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     @Override
     public void onSelected() {
-        checkUserAndLoadData();
+        refreshData();
     }
 
     @Override
@@ -157,7 +157,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
         switch(tag) {
             case TAG_ACTION_LOGIN:
-                checkUserAndLoadData();
+                refreshData();
                 break;
             case TAG_ACTION_INAPPROPRIATE:
             case TAG_ACTION_DELETE:
@@ -199,7 +199,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         }
     }
 
-    private void checkUserAndLoadData() {
+    private void refreshData() {
         if (forCurrentUser && ! State.get().isUserLoggedIn()) {
             ui.signInButton.setVisibility(View.VISIBLE);
             return;
@@ -208,6 +208,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         if (!dataHasBeenLoaded) {
             loadPageData(0, null);
         }
+        ui.adapter.notifyDataSetChanged();
     }
 
     private void loadPageData(int page, String titleFilter) {
