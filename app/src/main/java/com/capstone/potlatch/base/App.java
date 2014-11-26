@@ -13,9 +13,9 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+        //TODO: Ver lo del gift chain cuando se crea/actualiza el gift....
         //TODO: Get the saved state and set the token header in Net.
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
-        //TODO Permitir subir imágenes
 
 //TODO        probar actualizar imágenes con el nuevo escalado
 
