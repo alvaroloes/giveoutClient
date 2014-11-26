@@ -9,41 +9,58 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
         android:id="@+id/gift_title_line"
         android:orientation="horizontal"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="10dp">
         <TextView
             android:id="@+id/gift_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
-            android:maxLines="2"/>
+            android:maxLines="2"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"/>
         <TextView
             android:id="@+id/gift_chain_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="end"/>
+            android:gravity="end"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold"/>
     </LinearLayout>
 
     <com.android.volley.toolbox.NetworkImageView
         android:id="@+id/gift_image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/gift_image_height"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
+        android:background="@color/gift_image_background"
         android:layout_below="@+id/gift_title_line" />
 
     <TextView
         android:id="@+id/gift_touches_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/gift_image"
-        android:layout_alignParentStart="true" />
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:layout_alignParentStart="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
+        android:layout_alignBottom="@+id/gift_button_set"
+        android:gravity="center_vertical"
+        android:layout_alignTop="@+id/gift_button_set"
+        android:text="123 touches"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal"
         android:id="@+id/gift_button_set"
         android:layout_alignParentEnd="true"
@@ -79,7 +96,10 @@
         android:id="@+id/gift_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="4"
-        android:layout_below="@+id/gift_button_set" />
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="10dp"
+        android:maxLines="8"
+        android:layout_below="@+id/gift_button_set"/>
 
 </RelativeLayout>

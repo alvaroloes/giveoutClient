@@ -14,9 +14,9 @@ public class Gift {
     public Long id;
     public String title;
     public String description;
-    private String imageUrlFull;
-    private String imageUrlMedium;
-    private String imageUrlSmall;
+    public String imageUrlFull;
+    public String imageUrlMedium;
+    public String imageUrlSmall;
     public GiftChain giftChain;
     public User user;
     public List<Long> touchedByUserIds;

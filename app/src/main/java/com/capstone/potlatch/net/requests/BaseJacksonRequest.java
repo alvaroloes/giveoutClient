@@ -78,10 +78,12 @@ public class BaseJacksonRequest<T> extends Request<T> {
     @Override
     protected VolleyError parseNetworkError(VolleyError error) {
         try {
-            String str = new String(error.networkResponse.data, "UTF8");
-            Log.d("VOLLEY ERROR STRING", str);
+            if (error.networkResponse != null && error.networkResponse.data != null) {
+                String str = new String(error.networkResponse.data, "UTF8");
+                Log.d("VOLLEY ERROR STRING", str);
+            }
         } catch (UnsupportedEncodingException e) {
-            super.parseNetworkError(error);
+            return super.parseNetworkError(error);
         }
         return super.parseNetworkError(error);
     }

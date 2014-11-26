@@ -15,6 +15,7 @@ import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.models.Gift;
+import com.capstone.potlatch.models.GiftChain;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthMultiPartRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 
 
-public class ActivityCreateGift extends BaseActivity implements DialogLogin.OnLoginListener {
+public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogin.OnLoginListener {
     private static final String TAG_LOGIN = "ActivityCreateGift - TAG_LOGIN";
 
     @Override
@@ -32,9 +33,7 @@ public class ActivityCreateGift extends BaseActivity implements DialogLogin.OnLo
         setContentView(R.layout.activity_create_gift);
         if (! State.get().isUserLoggedIn()) {
             DialogLogin.open(getFragmentManager(), TAG_LOGIN);
-            return;
         }
-        testSendRequest();
     }
 
     @Override
@@ -64,7 +63,9 @@ public class ActivityCreateGift extends BaseActivity implements DialogLogin.OnLo
 
     @Override
     public void onLoginFinish(BaseRetainedDialog dialogFragment, String tag, boolean success) {
-        testSendRequest();
+        if (!success) {
+            finish();
+        }
     }
 
     private void testSendRequest() {
@@ -73,7 +74,7 @@ public class ActivityCreateGift extends BaseActivity implements DialogLogin.OnLo
                 new Response.Listener<Gift>() {
                     @Override
                     public void onResponse(Gift response) {
-                    int i = 0;
+                        int i = 0;
                         i = 0;
                     }
                 },
@@ -89,6 +90,9 @@ public class ActivityCreateGift extends BaseActivity implements DialogLogin.OnLo
         Gift gift = new Gift();
         gift.title = "Desde android";
         gift.description = "Vamos a ver si se puede crear un gift con imagen desde android";
+        gift.giftChain = new GiftChain();
+        gift.giftChain.id = 1l;
+
         String jsonGift = null;
         try {
             jsonGift = new ObjectMapper().writeValueAsString(gift);

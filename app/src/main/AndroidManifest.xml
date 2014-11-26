@@ -29,8 +29,8 @@
                 android:value="com.capstone.potlatch.ActivityMain" />
         </activity>
         <activity
-            android:name="com.capstone.potlatch.ActivityCreateGift"
-            android:label="@string/title_activity_activity_create_gift"
+            android:name=".ActivityCreateUpdateGift"
+            android:label="@string/activity_create_update_gift"
             android:parentActivityName="com.capstone.potlatch.ActivityMain" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

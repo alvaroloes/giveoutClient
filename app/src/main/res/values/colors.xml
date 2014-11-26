@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gift_image_background">#555</color>
+    <color name="gift_unpublished_text_color">#ffeeceb5</color>
+</resources>

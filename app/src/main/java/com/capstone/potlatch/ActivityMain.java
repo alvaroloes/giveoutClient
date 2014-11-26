@@ -73,7 +73,7 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
                 startActivity(i);
                 return true;
             case R.id.action_new_gift:
-                i = new Intent(this, ActivityCreateGift.class);
+                i = new Intent(this, ActivityCreateUpdateGift.class);
                 startActivity(i);
                 return true;
 
