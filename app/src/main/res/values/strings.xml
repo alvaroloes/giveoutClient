@@ -24,5 +24,10 @@
     <string name="confirm_unflag_inappropriate">Do you really want to <b>unflag</b> this Gift as inappropriate?</string>
     <string name="confirm_delete_gift">Do you really want to delete this Gift?</string>
     <string name="gift_title">Gift title</string>
+    <string name="gift_description">Gift description</string>
+    <string name="select_gift_chain">Select a Gift chain to publish the Gift</string>
+    <string name="create_gift_chain">Or create a new Gift chain</string>
+    <string name="dont_add_to_gift_chain">Do not add the Gift to a Gift chain. Leave it unpublished</string>
+    <string name="new_gift_chain_name">New Gift chain name</string>
 
 </resources>

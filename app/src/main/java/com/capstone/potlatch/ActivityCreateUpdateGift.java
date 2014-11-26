@@ -34,6 +34,7 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         if (! State.get().isUserLoggedIn()) {
             DialogLogin.open(getFragmentManager(), TAG_LOGIN);
         }
+
     }
 
     @Override
