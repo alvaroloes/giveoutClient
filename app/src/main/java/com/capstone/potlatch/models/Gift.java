@@ -1,6 +1,7 @@
 package com.capstone.potlatch.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
 
@@ -8,11 +9,15 @@ import java.util.List;
  * Created by alvaro on 13/11/14.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Gift {
-    public long id;
+    public Long id;
     public String title;
     public String description;
-    public long giftChainId;
+    private String imageUrlFull;
+    private String imageUrlMedium;
+    private String imageUrlSmall;
+    public Long giftChainId;
     public String giftChainName;
     public User user;
     public List<Long> touchedByUserIds;

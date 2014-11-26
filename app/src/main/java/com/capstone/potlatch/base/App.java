@@ -14,10 +14,10 @@ public class App extends Application {
     @Override
     public void onCreate() {
         //TODO: Get the saved state and set the token header in Net.
-        //TODO: Hacer un layout especial para los gifts de la sección My Gifts
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
         //TODO Permitir subir imágenes
-        //TODO Scalar las imágenes y guardarlas en el servidor mismo (con el id del Gift como carpeta)
+
+//TODO        probar actualizar imágenes con el nuevo escalado
 
         // Initialize Config class
         Config.initFor(this, env.name());

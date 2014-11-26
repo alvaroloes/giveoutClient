@@ -1,17 +1,20 @@
 package com.capstone.potlatch.net.requests;
 
+import android.util.Log;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.capstone.potlatch.net.OAuth2Token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,23 +22,13 @@ import java.util.Map;
  * Created by alvaro on 13/11/14.
  */
 public class BaseJacksonRequest<T> extends Request<T> {
-
-    private String oauth2TokenRefreshURL;
-    private String oauth2TokenRefreshGrantType = "refresh_token";
+    protected Map<String, String> headers = new HashMap<String, String>();
 
     private final Class<T> resultClass;
     private final TypeReference<T> resultTypeReference;
     private final JavaType resultJavaType;
 
     private Response.Listener<T> listener;
-    private Response.ErrorListener errorListener;
-
-    private String basicAuthName;
-    private String basicAuthPass;
-    private OAuth2Token oauth2Token;
-    private RequestQueue requestQueueForOAuth2RefreshTokenRequest;
-
-    private Map<String,String> headers = new HashMap<String, String>();
 
     public BaseJacksonRequest(int method, String url, TypeReference<T> resultTypeReference, Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
@@ -83,7 +76,28 @@ public class BaseJacksonRequest<T> extends Request<T> {
     }
 
     @Override
+    protected VolleyError parseNetworkError(VolleyError error) {
+        try {
+            String str = new String(error.networkResponse.data, "UTF8");
+            Log.d("VOLLEY ERROR STRING", str);
+        } catch (UnsupportedEncodingException e) {
+            super.parseNetworkError(error);
+        }
+        return super.parseNetworkError(error);
+    }
+
+    @Override
     protected void deliverResponse(T response) {
         listener.onResponse(response);
+    }
+
+
+    @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        return headers;
+    }
+
+    public void setHeader(String title, String content) {
+        headers.put(title, content);
     }
 }

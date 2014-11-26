@@ -8,7 +8,6 @@ import com.capstone.potlatch.net.OAuth2Token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +17,6 @@ public class AuthRequest<T> extends BaseJacksonRequest<T> implements RequestWith
     private String basicAuthName;
     private String basicAuthPass;
     private OAuth2Token oauth2Token;
-    private Map<String,String> headers = new HashMap<String, String>();
 
     public AuthRequest(int method, String url, TypeReference<T> resultTypeReference, Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, resultTypeReference, listener, errorListener);
