@@ -14,4 +14,9 @@ public class GiftChain {
     public Long id;
     public String name;
     public List<Gift> gifts;
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -15,6 +15,7 @@ public class App extends Application {
     public void onCreate() {
         //TODO: Get the saved state and set the token header in Net.
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
+        //TODO: Hacer un alert dialog
 
         // Initialize Config class
         Config.initFor(this, env.name());

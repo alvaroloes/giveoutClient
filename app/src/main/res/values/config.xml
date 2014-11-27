@@ -8,6 +8,6 @@
     <string name="local_basicAuthName">mobile</string>
     <string name="local_basicAuthPass" />
 
-    <integer name="pageSize">5</integer>
+    <integer name="pageSize">20</integer>
 
 </resources>

@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +21,12 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.capstone.potlatch.base.BaseActivity;
 import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogLogin;
+import com.capstone.potlatch.dialogs.DialogSelectGiftChain;
 import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.models.GiftChain;
 import com.capstone.potlatch.net.Net;
@@ -43,10 +44,11 @@ import java.io.OutputStream;
 import java.util.List;
 
 
-public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogin.OnLoginListener {
-    private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
-
+public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogin.OnLoginListener, DialogSelectGiftChain.OnDialogGiftChainSelectedListener {
     private static final String TAG_LOGIN = "ActivityCreateGift - TAG_LOGIN";
+    private static final String TAG_SELECT_GIFT_CHAIN = "ActivityCreateGift - TAG_SELECT_GIFT_CHAIN";
+
+    private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
     private static final int IMAGE_CAPTURE_REQUEST = 0;
     private static final int IMAGE_PICK_REQUEST = 1;
 
@@ -73,6 +75,13 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         mGiftDescription = (TextView) findViewById(R.id.gift_description);
         mGiftChain = (TextView) findViewById(R.id.gift_chain);
         mSelectGiftChainButton = (Button) findViewById(R.id.select_gift_chain_button);
+
+        mSelectGiftChainButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogSelectGiftChain.open(getFragmentManager(), TAG_SELECT_GIFT_CHAIN);
+            }
+        });
 
         mNoGiftChainCheck = (CheckBox) findViewById(R.id.no_gift_chain_check);
         mNoGiftChainCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -236,29 +245,27 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
     }
 
     void sendGift(Gift gift, File image) {
-        String jsonGift = null;
         try {
-            jsonGift = new ObjectMapper().writeValueAsString(gift);
+            String jsonGift = new ObjectMapper().writeValueAsString(gift);
+
+            String url = Routes.urlFor(Routes.GIFTS_PATH);
+            AuthMultiPartRequest<Gift> req = new AuthMultiPartRequest<>(Request.Method.POST, url, Gift.class,
+                    new Response.Listener<Gift>() {
+                        @Override
+                        public void onResponse(Gift response) {
+                            finish();
+                        }
+                    },
+                    getErrorListener(true)
+            );
+
+            req.addStringUpload("gift", jsonGift);
+            req.addFileUpload("image", image);
+            req.setTag(this);
+            Net.addToQueue(req);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return;
         }
-
-        String url = Routes.urlFor(Routes.GIFTS_PATH);
-        AuthMultiPartRequest<Gift> req = new AuthMultiPartRequest<>(Request.Method.POST, url, Gift.class,
-                new Response.Listener<Gift>() {
-                    @Override
-                    public void onResponse(Gift response) {
-                        finish();
-                    }
-                },
-                getErrorListener(true)
-        );
-
-        req.addStringUpload("gift", jsonGift);
-        req.addFileUpload("image", image);
-        req.setTag(this);
-        Net.addToQueue(req);
     }
 
     private void createTempImageUri() {
@@ -308,43 +315,11 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         mGiftImage.setTag(tempImageUri);
     }
 
-    private void testSendRequest() {
-        String url = Routes.urlFor(Routes.GIFTS_PATH);
-        AuthMultiPartRequest<Gift> req = new AuthMultiPartRequest<>(Request.Method.POST, url, Gift.class,
-                new Response.Listener<Gift>() {
-                    @Override
-                    public void onResponse(Gift response) {
-                        int i = 0;
-                        i = 0;
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        int i = 0;
-                        i = 0;
-                    }
-                }
-        );
-
-        Gift gift = new Gift();
-        gift.title = "Desde android";
-        gift.description = "Vamos a ver si se puede crear un gift con imagen desde android";
-        gift.giftChain = new GiftChain();
-        gift.giftChain.id = 1l;
-
-        String jsonGift = null;
-        try {
-            jsonGift = new ObjectMapper().writeValueAsString(gift);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+    @Override
+    public void onGiftChainSelected(BaseRetainedDialog dialogFragment, String tag, GiftChain giftChain) {
+        if (giftChain != null) {
+            Log.d("QWRE", "This is the selected gift chain: " + giftChain.id + giftChain.name);
         }
-        req.addStringUpload("gift", jsonGift);
-        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/baobab.jpg");
-        req.addFileUpload("image", file);
-
-
-        Net.addToQueue(req);
     }
 
 
