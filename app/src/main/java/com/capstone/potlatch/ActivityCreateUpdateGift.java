@@ -34,6 +34,7 @@ import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.models.GiftChain;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthMultiPartRequest;
+import com.capstone.potlatch.utils.ImageSampler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -87,7 +88,7 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if ( mGiftChain.getTag() != null ) {
-                    DialogConfirm.open(getFragmentManager(), TAG_CONFIRM_NEW_GIFT_CHAIN, "Edit the gift chain name to create a new one?");
+                    DialogConfirm.open(getFragmentManager(), TAG_CONFIRM_NEW_GIFT_CHAIN, "If you edit the gift chain name, a new one will be created on save...");
                 }
             }
 
@@ -329,9 +330,9 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
                 }
                 break;
         }
-        // TODO: Decode the image in background
-        mGiftImage.setImageURI(tempImageUri);
         mGiftImage.setTag(tempImageUri);
+        // Decode the image in background, off the UI thread.
+        new ImageSampler.WorkerURI(mGiftImage).execute(tempImageUri);
     }
 
     @Override

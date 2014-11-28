@@ -13,9 +13,16 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        //TODO: Get the saved state and set the token header in Net.
+        //TODO: Pantalla gift chains
+        //TODO: Pantalla top givers
+        //TODO: Update counts in background and notify the activities!! *
+        //TODO: Ver de qué forma informar a todos que se han creado nuevos gifts cuando vengo de ActivityCreate... *
+
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
         //TODO: Hacer un alert dialog
+        //TODO: Hacer el editar gift (creo que es simple)
+        //TODO: Ordenar por creación o número de touches
+        //TODO: No mostrar los obscenos según la preferencia del usuario
 
         // Initialize Config class
         Config.initFor(this, env.name());
