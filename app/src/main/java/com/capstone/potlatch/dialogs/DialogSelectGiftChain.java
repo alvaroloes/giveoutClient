@@ -47,8 +47,11 @@ public class DialogSelectGiftChain extends BaseRetainedDialog {
     private UI ui;
 
     public static DialogSelectGiftChain open(FragmentManager fragmentManager, String tag) {
-        DialogSelectGiftChain dialogConfirm = new DialogSelectGiftChain();
-        dialogConfirm.show(fragmentManager, tag);
+        DialogSelectGiftChain dialogConfirm = (DialogSelectGiftChain) fragmentManager.findFragmentByTag(tag);
+        if (dialogConfirm == null) {
+            dialogConfirm = new DialogSelectGiftChain();
+            dialogConfirm.show(fragmentManager, tag);
+        }
         return dialogConfirm;
     }
 

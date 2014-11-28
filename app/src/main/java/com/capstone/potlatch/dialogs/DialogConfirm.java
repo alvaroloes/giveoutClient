@@ -21,13 +21,16 @@ public class DialogConfirm extends BaseRetainedDialog {
     private OnDialogConfirmListener mListener;
 
     public static DialogConfirm open(FragmentManager fragmentManager, String tag, String text) {
-        DialogConfirm dialogConfirm = new DialogConfirm();
+        DialogConfirm dialogConfirm = (DialogConfirm) fragmentManager.findFragmentByTag(tag);
+        if (dialogConfirm == null) {
+            dialogConfirm = new DialogConfirm();
 
-        Bundle args = new Bundle();
-        args.putString(ARG_TEXT, text);
-        dialogConfirm.setArguments(args);
+            Bundle args = new Bundle();
+            args.putString(ARG_TEXT, text);
+            dialogConfirm.setArguments(args);
 
-        dialogConfirm.show(fragmentManager, tag);
+            dialogConfirm.show(fragmentManager, tag);
+        }
         return dialogConfirm;
     }
 

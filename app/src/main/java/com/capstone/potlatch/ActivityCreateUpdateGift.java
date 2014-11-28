@@ -6,14 +6,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +27,7 @@ import com.capstone.potlatch.base.BaseActivity;
 import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.dialogs.BaseRetainedDialog;
+import com.capstone.potlatch.dialogs.DialogConfirm;
 import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.dialogs.DialogSelectGiftChain;
 import com.capstone.potlatch.models.Gift;
@@ -44,8 +47,11 @@ import java.io.OutputStream;
 import java.util.List;
 
 
-public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogin.OnLoginListener, DialogSelectGiftChain.OnDialogGiftChainSelectedListener {
+public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogin.OnLoginListener,
+                                                                      DialogSelectGiftChain.OnDialogGiftChainSelectedListener,
+                                                                      DialogConfirm.OnDialogConfirmListener {
     private static final String TAG_LOGIN = "ActivityCreateGift - TAG_LOGIN";
+    private static final String TAG_CONFIRM_NEW_GIFT_CHAIN = "ActivityCreateGift - TAG_CONFIRM_NEW_GIFT_CHAIN";
     private static final String TAG_SELECT_GIFT_CHAIN = "ActivityCreateGift - TAG_SELECT_GIFT_CHAIN";
 
     private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
@@ -55,7 +61,7 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
     private List<GiftChain> giftChains;
     private Uri tempImageUri;
 
-    private TextView mGiftChain;
+    private EditText mGiftChain;
     private Button mSelectGiftChainButton;
     private TextView mGiftTitle;
     private TextView mGiftDescription;
@@ -73,9 +79,23 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         mGiftTitle = (TextView) findViewById(R.id.gift_title);
         mGiftImage = (ImageView) findViewById(R.id.gift_image);
         mGiftDescription = (TextView) findViewById(R.id.gift_description);
-        mGiftChain = (TextView) findViewById(R.id.gift_chain);
+        mGiftChain = (EditText) findViewById(R.id.gift_chain);
         mSelectGiftChainButton = (Button) findViewById(R.id.select_gift_chain_button);
+        mNoGiftChainCheck = (CheckBox) findViewById(R.id.no_gift_chain_check);
 
+        mGiftChain.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if ( mGiftChain.getTag() != null ) {
+                    DialogConfirm.open(getFragmentManager(), TAG_CONFIRM_NEW_GIFT_CHAIN, "Edit the gift chain name to create a new one?");
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
         mSelectGiftChainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,7 +103,6 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
             }
         });
 
-        mNoGiftChainCheck = (CheckBox) findViewById(R.id.no_gift_chain_check);
         mNoGiftChainCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -192,7 +211,7 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         String giftTitle = String.valueOf(mGiftTitle.getText());
         String giftDescription = String.valueOf(mGiftDescription.getText());
         String giftChainName = String.valueOf(mGiftChain.getText());
-        Long giftChainId = (Long) mGiftChain.getTag();
+        GiftChain giftChain = (GiftChain) mGiftChain.getTag();
         boolean thereMustBeAGiftChain = !mNoGiftChainCheck.isChecked();
 
         // Check for errors
@@ -223,19 +242,19 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         }
 
         // Create the gift chain
-        GiftChain giftChain = null;
+        GiftChain newGiftChain = null;
         if (thereMustBeAGiftChain) {
-            giftChain = new GiftChain();
-            if (giftChainId != null) {
-                giftChain.id = giftChainId;
+            newGiftChain = new GiftChain();
+            if (giftChain != null) {
+                newGiftChain.id = giftChain.id;
             } else {
-                giftChain.name = giftChainName;
+                newGiftChain.name = giftChainName;
             }
         }
 
         // Create the gift
         Gift gift = new Gift();
-        gift.giftChain = giftChain;
+        gift.giftChain = newGiftChain;
         gift.title = giftTitle;
         gift.description = giftDescription;
 
@@ -318,16 +337,17 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
     @Override
     public void onGiftChainSelected(BaseRetainedDialog dialogFragment, String tag, GiftChain giftChain) {
         if (giftChain != null) {
-            Log.d("QWRE", "This is the selected gift chain: " + giftChain.id + giftChain.name);
+            mGiftChain.setText(giftChain.name);
+            mGiftChain.setTag(giftChain);
         }
     }
 
-
-    class GiftChainRequestListener implements Response.Listener<List<GiftChain>>
-    {
-        @Override
-        public void onResponse(List<GiftChain> response) {
-
+    @Override
+    public void onConfirmationFinish(BaseRetainedDialog dialogFragment, String tag, boolean confirmed) {
+        if (confirmed) {
+            mGiftChain.setTag(null);
+        } else {
+            mGiftChain.setText(((GiftChain)mGiftChain.getTag()).name);
         }
     }
 }
