@@ -36,7 +36,7 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
 
         // Create the sections data list
         sectionsData.add(new SectionData(getString(R.string.section_gifts), SectionGifts.class));
-        sectionsData.add(new SectionData(getString(R.string.section_gifts),SectionGifts.class));
+        sectionsData.add(new SectionData(getString(R.string.section_gifts_chains),SectionGiftChains.class));
         sectionsData.add(new SectionData(getString(R.string.section_gifts),SectionGifts.class));
         args = new Bundle();
         args.putBoolean(SectionGifts.ARG_FOR_CURRENT_USER, true);

@@ -32,5 +32,6 @@
     <string name="choose_gift_chain">Choose existing</string>
     <string name="dont_publish_in_gift_chain">Do now publish this Gift in any Gift chain</string>
     <string name="save">Save</string>
+    <string name="filter_by_name">Filter by name</string>
 
 </resources>
