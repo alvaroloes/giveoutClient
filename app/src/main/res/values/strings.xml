@@ -33,5 +33,7 @@
     <string name="dont_publish_in_gift_chain">Do now publish this Gift in any Gift chain</string>
     <string name="save">Save</string>
     <string name="filter_by_name">Filter by name</string>
+    <string name="total_touches">Total touches received</string>
+    <string name="total_gift_count">Total number of gifts</string>
 
 </resources>

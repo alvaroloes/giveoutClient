@@ -85,7 +85,7 @@ public class SectionGiftChains extends Fragment implements AwareFragment.OnViewP
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ui = new UI();
-        View v = inflater.inflate(R.layout.fragment_section_gift_chains, container, false);
+        View v = inflater.inflate(R.layout.fragment_section_generic_list, container, false);
 
         ListView giftList = (ListView) v.findViewById(R.id.list);
 
@@ -215,22 +215,23 @@ public class SectionGiftChains extends Fragment implements AwareFragment.OnViewP
 
             ((TextView) ViewHolder.get(v, R.id.gift_chain_name)).setText(giftChain.name);
 
-            int maxGiftImages = Math.min(3, giftChain.gifts.size());
+            int maxGiftImages = 3;
             Resources res = getResources();
             String packageName = getContext().getPackageName();
 
             for (int i = 0; i < maxGiftImages; ++i) {
-                int giftImageId = res.getIdentifier("gift_image" + (i + 1), "id", packageName);
+                try {
+                    int giftImageId = res.getIdentifier("gift_image" + (i + 1), "id", packageName);
 
-                NetworkImageView imageView = ViewHolder.get(v, giftImageId);
-                imageView.setImageUrl(null, Net.getImgLoader());
-                Gift g = giftChain.gifts.get(i);
-                if (g.imageUrlSmall != null) {
-                    String imageUrl = Routes.urlFor(g.imageUrlSmall);
-                    imageView.setImageUrl(imageUrl, Net.getImgLoader());
-                }
+                    NetworkImageView imageView = ViewHolder.get(v, giftImageId);
+                    imageView.setImageUrl(null, Net.getImgLoader());
+                    Gift g = giftChain.gifts.get(i);
+                    if (g.imageUrlSmall != null) {
+                        String imageUrl = Routes.urlFor(g.imageUrlSmall);
+                        imageView.setImageUrl(imageUrl, Net.getImgLoader());
+                    }
+                } catch (IndexOutOfBoundsException ignored) {}
             }
-
             return v;
         }
     }

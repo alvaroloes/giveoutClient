@@ -37,7 +37,7 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
         // Create the sections data list
         sectionsData.add(new SectionData(getString(R.string.section_gifts), SectionGifts.class));
         sectionsData.add(new SectionData(getString(R.string.section_gifts_chains),SectionGiftChains.class));
-        sectionsData.add(new SectionData(getString(R.string.section_gifts),SectionGifts.class));
+        sectionsData.add(new SectionData(getString(R.string.section_top_givers),SectionTopGivers.class));
         args = new Bundle();
         args.putBoolean(SectionGifts.ARG_FOR_CURRENT_USER, true);
         sectionsData.add(new SectionData(getString(R.string.section_my_gifts),SectionGifts.class, args));
@@ -164,20 +164,19 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
         }
     }
 
-}
+    static class SectionData {
+        String title;
+        Class<? extends Fragment> sectionClass;
+        Bundle arguments;
 
-class SectionData {
-    String title;
-    Class<? extends Fragment> sectionClass;
-    Bundle arguments;
+        SectionData(String title, Class<? extends Fragment> sectionClass, Bundle arguments) {
+            this.title = title;
+            this.sectionClass = sectionClass;
+            this.arguments = arguments;
+        }
 
-    SectionData(String title, Class<? extends Fragment> sectionClass, Bundle arguments) {
-        this.title = title;
-        this.sectionClass = sectionClass;
-        this.arguments = arguments;
-    }
-
-    SectionData(String title, Class<? extends Fragment> sectionClass) {
-        this(title, sectionClass, null);
+        SectionData(String title, Class<? extends Fragment> sectionClass) {
+            this(title, sectionClass, null);
+        }
     }
 }

@@ -10,11 +10,16 @@ import java.util.Map;
 public class Routes {
     public static String baseUrl = "";
 
+    // Parameters
     public static final String TITLE_PARAMETER = "title";
     public static final String PAGE_PARAMETER = "page";
     public static final String LIMIT_PARAMETER = "limit";
     public static final String TOP_KIND_PARAMETER = "kind";
     public static final String REGRET_PARAMETER = "regret";
+
+    // Posible parameter values
+    public static final String TOP_KIND_GIFT_COUNT = "giftCount";
+    public static final String TOP_KIND_GIFT_TOUCHES = "giftTouches";
 
     public static final String TOKEN_PATH = "/oauth/token";
 
