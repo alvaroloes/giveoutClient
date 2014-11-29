@@ -88,13 +88,6 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
         if (f instanceof AwareFragment.OnUserLogin) {
             ((AwareFragment.OnUserLogin) f).onLogin(dialogFragment, tag, success);
         }
-//        SparseArray<Fragment> fragments = adapter.getActiveFragments();
-//        for (int i = 0; i < fragments.size(); ++i) {
-//            Fragment f = fragments.valueAt(i);
-//            if (f instanceof AwareFragment.OnUserLogin) {
-//                ((AwareFragment.OnUserLogin) f).onLogin(dialogFragment, tag, success);
-//            }
-//        }
     }
 
     @Override

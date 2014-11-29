@@ -24,27 +24,26 @@
             android:id="@+id/gift_image1"
             android:layout_width="0dp"
             android:layout_height="@dimen/gift_small_image_height"
-            android:paddingLeft="@dimen/input_margin"
-            android:paddingRight="@dimen/input_margin"
             android:layout_weight="1"
+            android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:background="@color/gift_image_background" />
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/gift_image2"
             android:layout_width="0dp"
             android:layout_height="@dimen/gift_small_image_height"
-            android:paddingLeft="@dimen/input_margin"
-            android:paddingRight="@dimen/input_margin"
             android:layout_weight="1"
+            android:layout_marginStart="@dimen/input_margin"
+            android:layout_marginEnd="@dimen/input_margin"
+            android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:background="@color/gift_image_background" />
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/gift_image3"
             android:layout_width="0dp"
             android:layout_height="@dimen/gift_small_image_height"
-            android:paddingLeft="@dimen/input_margin"
-            android:paddingRight="@dimen/input_margin"
             android:layout_weight="1"
+            android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:background="@color/gift_image_background" />
     </LinearLayout>

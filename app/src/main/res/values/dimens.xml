@@ -6,5 +6,5 @@
     <dimen name="button_height">32dp</dimen>
     <dimen name="gift_padding">12dp</dimen>
     <dimen name="input_margin">16dp</dimen>
-    <dimen name="gift_small_image_height">64dp</dimen>
+    <dimen name="gift_small_image_height">70dp</dimen>
 </resources>

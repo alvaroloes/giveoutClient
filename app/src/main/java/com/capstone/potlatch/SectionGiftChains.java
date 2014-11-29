@@ -3,6 +3,7 @@ package com.capstone.potlatch;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
@@ -212,55 +213,23 @@ public class SectionGiftChains extends Fragment implements AwareFragment.OnViewP
 
             GiftChain giftChain = getItem(position);
 
-            try {
-                ((TextView) ViewHolder.get(v, R.id.gift_chain_name)).setText(giftChain.name);
-                if (giftChain.gifts.size() > 0) {
+            ((TextView) ViewHolder.get(v, R.id.gift_chain_name)).setText(giftChain.name);
 
-                    NetworkImageView imageView = ViewHolder.get(v, R.id.gift_image1);
-                    imageView.setImageUrl(null, Net.getImgLoader());
-                    Gift g = giftChain.gifts.get(0);
-                    if (g.imageUrlSmall != null) {
-                        String imageUrl = Routes.urlFor(g.imageUrlSmall);
-                        imageView.setImageUrl(imageUrl, Net.getImgLoader());
-                    }
+            int maxGiftImages = Math.min(3, giftChain.gifts.size());
+            Resources res = getResources();
+            String packageName = getContext().getPackageName();
 
-                    imageView = ViewHolder.get(v, R.id.gift_image2);
-                    imageView.setImageUrl(null, Net.getImgLoader());
+            for (int i = 0; i < maxGiftImages; ++i) {
+                int giftImageId = res.getIdentifier("gift_image" + (i + 1), "id", packageName);
 
-                    g = giftChain.gifts.get(1);
-                    if (g.imageUrlSmall != null) {
-                        String imageUrl = Routes.urlFor(g.imageUrlSmall);
-                        imageView.setImageUrl(imageUrl, Net.getImgLoader());
-                    }
-
-                    imageView = ViewHolder.get(v, R.id.gift_image3);
-                    imageView.setImageUrl(null, Net.getImgLoader());
-
-                    g = giftChain.gifts.get(2);
-                    if (g.imageUrlSmall != null) {
-                        String imageUrl = Routes.urlFor(g.imageUrlSmall);
-                        imageView.setImageUrl(imageUrl, Net.getImgLoader());
-                    }
+                NetworkImageView imageView = ViewHolder.get(v, giftImageId);
+                imageView.setImageUrl(null, Net.getImgLoader());
+                Gift g = giftChain.gifts.get(i);
+                if (g.imageUrlSmall != null) {
+                    String imageUrl = Routes.urlFor(g.imageUrlSmall);
+                    imageView.setImageUrl(imageUrl, Net.getImgLoader());
                 }
             }
-            catch (Exception e) {
-
-            }
-
-
-//
-//            ViewHolder.get(v, R.id.gift_edit).setVisibility(View.GONE);
-//            ViewHolder.get(v, R.id.gift_delete).setVisibility(View.GONE);
-//
-//            View touchButton = ViewHolder.get(v, R.id.gift_touch_button);
-//            View inappButton = ViewHolder.get(v, R.id.gift_inappropriate_button);
-//
-//            touchButton.setOnClickListener(new OnGiftTouchedMeListener(gift));
-//            inappButton.setOnClickListener(new OnGiftInappropriateListener(gift));
-//
-//            User user = State.get().getUser();
-//            touchButton.setSelected(gift.touchedBy(user));
-//            inappButton.setSelected(gift.inappropriateBy(user));
 
             return v;
         }
