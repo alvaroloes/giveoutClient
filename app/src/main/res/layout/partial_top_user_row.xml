@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:paddingTop="@dimen/activity_horizontal_margin"
     android:paddingBottom="@dimen/activity_horizontal_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin">
@@ -21,20 +22,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
-        android:ellipsize="end"
-        android:maxLines="1"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:layout_alignTop="@+id/user_image"
         android:layout_toEndOf="@+id/user_image" />
     <TextView
         android:id="@+id/user_kind_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_toEndOf="@+id/user_image"
         android:layout_alignBottom="@+id/user_image"
         android:layout_marginBottom="10dp" />

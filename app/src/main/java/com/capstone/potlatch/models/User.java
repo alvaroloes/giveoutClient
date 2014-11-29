@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class User {
     public long id;
     public String username;
-    public String giftCount;
-    public String giftTouches;
+    public int giftCount;
+    public int giftTouches;
     public String imageUrlFull;
     public String imageUrlMedium;
 }

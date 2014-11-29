@@ -225,6 +225,9 @@ public class SectionGiftChains extends Fragment implements AwareFragment.OnViewP
 
                     NetworkImageView imageView = ViewHolder.get(v, giftImageId);
                     imageView.setImageUrl(null, Net.getImgLoader());
+                    imageView.setDefaultImageResId(R.drawable.default_gift_image);
+                    imageView.setErrorImageResId(R.drawable.default_gift_image);
+
                     Gift g = giftChain.gifts.get(i);
                     if (g.imageUrlSmall != null) {
                         String imageUrl = Routes.urlFor(g.imageUrlSmall);

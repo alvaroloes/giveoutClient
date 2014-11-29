@@ -192,6 +192,7 @@ public class SectionTopGivers extends Fragment implements AwareFragment.OnViewPa
 
             NetworkImageView imageView = ViewHolder.get(v, R.id.user_image);
             imageView.setImageUrl(null, Net.getImgLoader());
+            imageView.setDefaultImageResId(R.drawable.default_user_image);
             if (user.imageUrlMedium != null) {
                 String imageUrl = Routes.urlFor(user.imageUrlMedium);
                 imageView.setImageUrl(imageUrl, Net.getImgLoader());
