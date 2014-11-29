@@ -5,11 +5,13 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -40,40 +42,39 @@ public class SectionTopGivers extends Fragment implements AwareFragment.OnViewPa
     // Fragment is retained
     private static class UI {
         UserAdapter adapter;
-        SearchView searchView;
     }
     private UI ui;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
         setRetainInstance(true);
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.searchable_options, menu);
-//        // Setup the search action view
-//        MenuItem searchItem = menu.findItem(R.id.action_search);
-//        ui.searchView = (SearchView) searchItem.getActionView();
-//        ui.searchView.setQueryHint(getActivity().getString(R.string.filter_by_name));
-//
-//        SearchListener searchListener = new SearchListener();
-//        ui.searchView.setOnQueryTextListener(searchListener);
-//        MenuItemCompat.setOnActionExpandListener(searchItem, searchListener);
-//
-//        if (lastOrderKind != null) {
-//            // This is very weird. If you call "setQuery" in this layout pass, it doesn't work. It
-//            // needs to be delayed until the following pass.
-//            ui.searchView.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    ui.searchView.setQuery(lastOrderKind, false);
-//                }
-//            });
-//        }
-//    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_section_top_givers, menu);
+
+        MenuItem orderByCount = menu.findItem(R.id.action_top_by_gift_count);
+        MenuItem orderByTouches = menu.findItem(R.id.action_top_by_gift_touches);
+
+        orderByCount.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                loadPageData(0, Routes.TOP_KIND_GIFT_COUNT);
+                return true;
+            }
+        });
+
+        orderByTouches.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                loadPageData(0, Routes.TOP_KIND_GIFT_TOUCHES);
+                return true;
+            }
+        });
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -13,7 +13,6 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        //TODO: Pantalla top givers
         //TODO: Update counts in background and notify the activities!! *
         //TODO: Ver de qué forma informar a todos que se han creado nuevos gifts cuando vengo de ActivityCreate... *
 

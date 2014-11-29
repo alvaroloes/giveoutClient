@@ -35,5 +35,7 @@
     <string name="filter_by_name">Filter by name</string>
     <string name="total_touches">Total touches: %1$d</string>
     <string name="total_gift_count">Total gifts count: %1$d</string>
+    <string name="order_by_gift_touches">Order by gift touches</string>
+    <string name="order_by_gift_count">Order by gift count</string>
 
 </resources>
