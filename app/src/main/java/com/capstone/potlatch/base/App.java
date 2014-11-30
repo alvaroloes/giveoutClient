@@ -1,9 +1,12 @@
 package com.capstone.potlatch.base;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.utils.CertUtils;
+import com.capstone.potlatch.utils.SyncManager;
 
 /**
  * Created by alvaro on 13/11/14.
@@ -13,7 +16,6 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        //TODO: Update counts in background and notify the activities!! *
         //TODO: Ver de qué forma informar a todos que se han creado nuevos gifts cuando vengo de ActivityCreate... *
 
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
@@ -33,6 +35,11 @@ public class App extends Application {
 
         // Configure network singleton
         Net.setContext(this);
+
+        // Sets the alarm for periodic updates
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int syncFreqMinutes = Integer.parseInt(sharedPref.getString("sync_freq", "15"));
+        SyncManager.setAlarm(this, SyncManager.REFRESH_COUNTS_ACTION, syncFreqMinutes * 60 * 1000);
 
         /**
          * THIS IS A EXTREMELY INSECURE WAY TO ACCEPT HTTPS CERTIFICATES AS ALL OF THEM ARE ACCEPTED,

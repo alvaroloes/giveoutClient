@@ -8,7 +8,11 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.capstone.potlatch.utils.SyncManager;
+
 public class ActivitySettings extends PreferenceActivity {
+    public static final String KEY_SYNC_FREQ = "sync_freq";
+    public static final String KEY_NO_INAPPROPRIATE_GIFT = "no_inappropriate_gifts";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,11 @@ public class ActivitySettings extends PreferenceActivity {
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
                 preference.setSummary(stringValue);
+            }
+
+            if (KEY_SYNC_FREQ.equals(preference.getKey())) {
+                int syncMinutes = Integer.parseInt(((ListPreference) preference).getValue());
+                SyncManager.setAlarm(preference.getContext(), SyncManager.REFRESH_COUNTS_ACTION, syncMinutes * 60 * 1000);
             }
             return true;
         }

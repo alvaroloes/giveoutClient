@@ -6,23 +6,23 @@ import android.content.Context;
 import android.content.Intent;
 
 public class SyncManager {
+    private static final String pkg = SyncManager.class.getPackage().getName();
+    public static final String REFRESH_COUNTS_ACTION = pkg + "REFRESH_COUNTS_ACTION";
+    public static final String RELOAD_DATA_ACTION = pkg + "RELOAD_DATA_ACTION";
 
-    public static final String DATA_SHOULD_BE_REFRESHED_ACTION = SyncManager.class.getPackage().getName() + "DATA_SHOULD_BE_REFRESHED_ACTION";
-
-    public static void setAlarm(Context context)
+    public static void setAlarm(Context context, String action, long millis)
     {
-        AlarmManager alarmManager = (android.app.AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(DATA_SHOULD_BE_REFRESHED_ACTION);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(action);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        //After after 5 seconds
-        alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), 1000 * 5 , pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC, System.currentTimeMillis(), millis , pendingIntent);
     }
 
-    public static void cancelAlarm(Context context)
+    public static void cancelAlarm(Context context, String action)
     {
-        Intent intent = new Intent(context, SyncManager.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
-        android.app.AlarmManager alarmManager = (android.app.AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(action);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmManager.cancel(pendingIntent);
     }
 }

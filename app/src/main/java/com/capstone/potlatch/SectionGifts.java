@@ -33,10 +33,10 @@ import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthRequest;
-import com.capstone.potlatch.utils.SyncManager;
 import com.capstone.potlatch.utils.AwareFragment;
 import com.capstone.potlatch.utils.Copier;
 import com.capstone.potlatch.utils.EndlessScrollListener;
+import com.capstone.potlatch.utils.SyncManager;
 import com.capstone.potlatch.utils.ViewHolder;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -55,16 +55,18 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     private List<Gift> gifts = new ArrayList<Gift>();
     private boolean dataHasBeenLoaded = false;
+    private boolean dataIsReloading = false;
     private int lastLoadedDataPage = 0;
     private String lastTitleFilter;
     private boolean forCurrentUser = false;
-    private ScrollListener scrollListener;
+    private ScrollListener scrollListener = new ScrollListener();
     private Copier copier = new Copier();
     private BroadcastReceiver updateDataReceiver;
 
     // Members that must be cleaned in onDestroyView to avoid potential memory leaks, as this
     // Fragment is retained
     private static class UI {
+        ListView giftList;
         GiftsAdapter adapter;
         SearchView searchView;
         Button signInButton;
@@ -113,12 +115,12 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         ui = new UI();
         View v = inflater.inflate(R.layout.fragment_section_gifts, container, false);
 
-        ListView giftList = (ListView) v.findViewById(R.id.gift_list);
+        ui.giftList = (ListView) v.findViewById(R.id.gift_list);
 
         ui.adapter = forCurrentUser ? new UserGiftsAdapter(getActivity(), gifts)
                                     : new PublicGiftsAdapter(getActivity(), gifts);
-        giftList.setAdapter(ui.adapter);
-        giftList.setOnScrollListener(scrollListener);
+        ui.giftList.setAdapter(ui.adapter);
+        ui.giftList.setOnScrollListener(scrollListener);
 
         ui.signInButton = (Button) v.findViewById(R.id.sign_in_button);
         ui.signInButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +150,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         super.onStart();
 
         updateDataReceiver = new UpdateDataBroadcastReceiver();
-        IntentFilter updateIntentFilter=new IntentFilter(SyncManager.DATA_SHOULD_BE_REFRESHED_ACTION);
+        IntentFilter updateIntentFilter=new IntentFilter(SyncManager.REFRESH_COUNTS_ACTION);
         getActivity().registerReceiver(updateDataReceiver, updateIntentFilter);
     }
 
@@ -230,19 +232,34 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     }
 
     private void loadPageData(int page, String titleFilter) {
+        loadData(page, titleFilter, false);
+    }
+
+    private void reloadCurrentData() {
+        loadData(0, lastTitleFilter, true);
+    }
+
+    private void loadData(int page, String titleFilter, boolean refreshCurrentDataOnly) {
         if (page == 0) {
             scrollListener.reset();
         }
 
-        lastLoadedDataPage = page;
-        lastTitleFilter = titleFilter;
+        int pageSize = Config.pageSize;
+        if (refreshCurrentDataOnly) {
+            dataIsReloading = true;
+            pageSize = gifts.size();
+            ui.giftList.setOnScrollListener(null);
+        } else {
+            lastLoadedDataPage = page;
+            lastTitleFilter = titleFilter;
+        }
 
         String basePath = forCurrentUser ? Routes.MY_GIFTS_PATH
                                          : Routes.GIFTS_PATH;
 
         String url = Routes.urlFor(basePath,
                                    Routes.PAGE_PARAMETER, page,
-                                   Routes.LIMIT_PARAMETER, Config.pageSize,
+                                   Routes.LIMIT_PARAMETER, pageSize,
                                    Routes.TITLE_PARAMETER, titleFilter);
 
         AuthRequest<List<Gift>> req = new AuthRequest<>(Request.Method.GET, url,
@@ -251,8 +268,10 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
                                                                   ((BaseActivity) getActivity()).getErrorListener(false));
         req.setTag(this);
         Net.addToQueue(req);
-        System.out.println("Loaging page nº " + lastLoadedDataPage + " with title filter: " + String.valueOf(lastTitleFilter));
+        System.out.println("Loaging page nº " + page + " with title filter: " + String.valueOf(titleFilter));
     }
+
+
 
     private void flagOrTouch(Gift gift, boolean touch) {
         User user = State.get().getUser();
@@ -290,8 +309,10 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     class RequestLoadPageSuccessListener implements Response.Listener<List<Gift>> {
         @Override
         public void onResponse(List<Gift> response) {
-            if (lastLoadedDataPage == 0) {
+            if (lastLoadedDataPage == 0 || dataIsReloading) {
                 gifts.clear();
+                dataIsReloading = false;
+                ui.giftList.setOnScrollListener(scrollListener);
             }
             gifts.addAll(response);
             dataHasBeenLoaded = true;
@@ -377,7 +398,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
         @Override
         public void onClick(View v) {
-
+            //todo
         }
     }
 
@@ -466,6 +487,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         @Override
         public void onReceive(Context context, Intent intent) {
             Toast.makeText(context, "HEY", Toast.LENGTH_SHORT).show();
+            reloadCurrentData();
         }
     }
 }

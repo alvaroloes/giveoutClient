@@ -51,7 +51,6 @@ public class GiftsAdapter extends ArrayAdapter<Gift> {
 
         NetworkImageView imageView = ViewHolder.get(v, R.id.gift_image);
         imageView.setImageUrl(null, Net.getImgLoader());
-        imageView.setDefaultImageResId(R.drawable.default_gift_image);
         imageView.setErrorImageResId(R.drawable.default_gift_image);
 
         if (g.imageUrlMedium != null) {

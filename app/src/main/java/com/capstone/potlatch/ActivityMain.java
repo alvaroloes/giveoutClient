@@ -51,10 +51,13 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setOnPageChangeListener(new OnSectionSelectedListener());
         tabs.setViewPager(pager);
-
-        SyncManager.setAlarm(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        SyncManager.cancelAlarm(this, SyncManager.REFRESH_COUNTS_ACTION);
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
