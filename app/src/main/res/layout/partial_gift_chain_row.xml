@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <com.android.volley.toolbox.NetworkImageView
+        <com.capstone.potlatch.utils.FadeInNetworkImageView
             android:id="@+id/gift_image1"
             android:layout_width="0dp"
             android:layout_height="@dimen/gift_small_image_height"
@@ -28,7 +28,7 @@
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:background="@color/gift_image_background" />
-        <com.android.volley.toolbox.NetworkImageView
+        <com.capstone.potlatch.utils.FadeInNetworkImageView
             android:id="@+id/gift_image2"
             android:layout_width="0dp"
             android:layout_height="@dimen/gift_small_image_height"
@@ -38,7 +38,7 @@
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:background="@color/gift_image_background" />
-        <com.android.volley.toolbox.NetworkImageView
+        <com.capstone.potlatch.utils.FadeInNetworkImageView
             android:id="@+id/gift_image3"
             android:layout_width="0dp"
             android:layout_height="@dimen/gift_small_image_height"

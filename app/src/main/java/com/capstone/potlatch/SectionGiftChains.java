@@ -53,7 +53,6 @@ public class SectionGiftChains extends Fragment implements AwareFragment.OnViewP
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         setRetainInstance(true);
     }
 

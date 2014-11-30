@@ -53,6 +53,8 @@ import java.util.List;
 public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogin.OnLoginListener,
                                                                       DialogSelectGiftChain.OnDialogGiftChainSelectedListener,
                                                                       DialogConfirm.OnDialogConfirmListener {
+    private static final String ARG_GIFT_FOR_UPDATE = "ARG_GIFT_FOR_UPDATE";
+
     private static final String TAG_LOGIN = "ActivityCreateGift - TAG_LOGIN";
     private static final String TAG_CONFIRM_NEW_GIFT_CHAIN = "ActivityCreateGift - TAG_CONFIRM_NEW_GIFT_CHAIN";
     private static final String TAG_SELECT_GIFT_CHAIN = "ActivityCreateGift - TAG_SELECT_GIFT_CHAIN";
@@ -63,6 +65,7 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
 
     private List<GiftChain> giftChains;
     private Uri tempImageUri;
+    private Gift giftForUpdate;
 
     private EditText mGiftChain;
     private Button mSelectGiftChainButton;
@@ -137,6 +140,14 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
                 getDataAndSendGift();
             }
         });
+
+        giftForUpdate = (Gift) getIntent().getSerializableExtra(ARG_GIFT_FOR_UPDATE);
+
+        fillFromGfit(giftForUpdate);
+    }
+
+    private void fillFromGfit(Gift gift) {
+
     }
 
     @Override

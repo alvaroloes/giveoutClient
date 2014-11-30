@@ -18,13 +18,12 @@ public class App extends Application {
     @Override
     public void onCreate() {
         //TODO: Crear usuario
-        //TODO: Mostrar imágenes con un fade in
-        //TODO: Image zoom
         //TODO: Hacer el editar gift (creo que es simple)
 
         //TODO: Material design
         //TODO: Filtro de gift chains por name no está implementado en el servidor
         //TODO: Hacer un alert dialog
+        //TODO: Image zoom
 
         // Initialize Config class
         Config.initFor(this, env.name());
