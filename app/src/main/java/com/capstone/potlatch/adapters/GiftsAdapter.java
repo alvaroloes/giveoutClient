@@ -1,6 +1,7 @@
 package com.capstone.potlatch.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -41,12 +42,12 @@ public class GiftsAdapter extends ArrayAdapter<Gift> {
         ((Button) ViewHolder.get(v, R.id.gift_touch_button)).setText(touchesString);
 
         TextView giftChainTextView = ViewHolder.get(v, R.id.gift_chain_name);
-//        giftChainTextView.setTextColor(getContext().getResources().getColor(android.R.color.primary_text_dark));
+        giftChainTextView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         String giftChainName = getContext().getString(R.string.gift_unpublished);
         if (g.giftChain != null) {
             giftChainName = g.giftChain.name;
         } else {
-//            giftChainTextView.setTextColor(getContext().getResources().getColor(R.color.gift_unpublished_text_color));
+            giftChainTextView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC);
         }
         giftChainTextView.setText(giftChainName);
 

@@ -23,7 +23,8 @@
             android:ellipsize="end"
             android:maxLines="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="@android:color/black"/>
         <TextView
             android:id="@+id/gift_chain_name"
             android:layout_width="0dp"

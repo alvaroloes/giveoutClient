@@ -2,4 +2,7 @@
 <resources>
     <color name="gift_image_background">#555</color>
     <color name="gift_unpublished_text_color">#ffeeceb5</color>
+
+    <color name="primary_color">#ffe36d0d</color>
+    <color name="primary_color_dark">#ff914b0d</color>
 </resources>

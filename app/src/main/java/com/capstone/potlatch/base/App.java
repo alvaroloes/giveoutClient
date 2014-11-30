@@ -18,7 +18,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
 
-        //TODO: Diseño
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
         //TODO: Hacer un alert dialog
 
