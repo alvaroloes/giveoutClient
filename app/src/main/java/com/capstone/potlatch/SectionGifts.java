@@ -27,6 +27,7 @@ import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogConfirm;
+import com.capstone.potlatch.dialogs.DialogLoading;
 import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.models.User;

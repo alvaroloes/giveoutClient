@@ -28,6 +28,7 @@ import com.capstone.potlatch.base.Routes;
 import com.capstone.potlatch.base.State;
 import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogConfirm;
+import com.capstone.potlatch.dialogs.DialogLoading;
 import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.dialogs.DialogSelectGiftChain;
 import com.capstone.potlatch.models.Gift;
@@ -253,16 +254,19 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
         try {
             String jsonGift = new ObjectMapper().writeValueAsString(gift);
 
+            DialogLoading progressDialog = DialogLoading.open(getFragmentManager());
+
             String url = Routes.urlFor(Routes.GIFTS_PATH);
             AuthMultiPartRequest<Gift> req = new AuthMultiPartRequest<>(Request.Method.POST, url, Gift.class,
                     new Response.Listener<Gift>() {
                         @Override
                         public void onResponse(Gift response) {
+                            DialogLoading.close(getFragmentManager());
                             SyncManager.sendBroadcast(ActivityCreateUpdateGift.this, SyncManager.RELOAD_DATA_ACTION);
                             finish();
                         }
                     },
-                    getErrorListener(true)
+                    getErrorListener(true, progressDialog)
             );
 
             req.addStringUpload("gift", jsonGift);

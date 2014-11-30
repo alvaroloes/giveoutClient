@@ -17,10 +17,6 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-
-        //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
-        //TODO: Hacer un alert dialog
-
         //TODO: Crear usuario
         //TODO: Mostrar imágenes con un fade in
         //TODO: Image zoom
@@ -28,6 +24,7 @@ public class App extends Application {
 
         //TODO: Material design
         //TODO: Filtro de gift chains por name no está implementado en el servidor
+        //TODO: Hacer un alert dialog
 
         // Initialize Config class
         Config.initFor(this, env.name());
