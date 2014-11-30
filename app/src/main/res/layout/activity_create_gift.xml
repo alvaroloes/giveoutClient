@@ -36,6 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/gift_image_height"
                     android:scaleType="centerCrop"
+                    android:src="@drawable/default_gift_image"
                     android:background="@color/gift_image_background"/>
                 <ImageButton
                     android:id="@+id/image_from_gallery_button"

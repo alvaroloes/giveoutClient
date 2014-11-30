@@ -64,7 +64,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_delete"
-            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:contentDescription="@string/delete_gift" />
         <Button
             android:id="@+id/gift_touch_button"
@@ -79,7 +79,8 @@
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_edit"
             android:contentDescription="@string/edit_gift"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

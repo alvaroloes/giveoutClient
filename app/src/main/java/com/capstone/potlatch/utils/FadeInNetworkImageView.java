@@ -12,7 +12,7 @@ import com.android.volley.toolbox.NetworkImageView;
 
 public class FadeInNetworkImageView extends NetworkImageView {
  
-    private static final int FADE_IN_TIME_MS = 300;
+    private static final int FADE_IN_TIME_MS = 200;
  
     public FadeInNetworkImageView(Context context) {
         super(context);

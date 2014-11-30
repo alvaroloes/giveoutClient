@@ -62,7 +62,7 @@ public class DialogLogin extends BaseRetainedDialog {
                              Bundle savedInstanceState) {
         ui = new UI();
         getDialog().setTitle(getActivity().getString(R.string.login_title));
-        View v = inflater.inflate(R.layout.fragment_dialog_login, container, false);
+        View v = inflater.inflate(R.layout.dialog_login, container, false);
 
         ui.username = (EditText) v.findViewById(R.id.login_username);
         ui.password = (EditText) v.findViewById(R.id.login_password);
