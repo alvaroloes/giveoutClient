@@ -55,7 +55,7 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
 
     @Override
     protected void onDestroy() {
-        SyncManager.cancelAlarm(this, SyncManager.REFRESH_COUNTS_ACTION);
+        SyncManager.cancelAlarm(this, SyncManager.UPDATE_DATA_ACTION);
         super.onDestroy();
     }
 

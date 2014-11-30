@@ -64,7 +64,7 @@ public class ActivitySettings extends PreferenceActivity {
 
             if (KEY_SYNC_FREQ.equals(preference.getKey())) {
                 int syncMinutes = Integer.parseInt(((ListPreference) preference).getValue());
-                SyncManager.setAlarm(preference.getContext(), SyncManager.REFRESH_COUNTS_ACTION, syncMinutes * 60 * 1000);
+                SyncManager.setAlarm(preference.getContext(), SyncManager.UPDATE_DATA_ACTION, syncMinutes * 60 * 1000);
             }
             return true;
         }

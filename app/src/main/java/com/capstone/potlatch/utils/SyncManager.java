@@ -7,8 +7,13 @@ import android.content.Intent;
 
 public class SyncManager {
     private static final String pkg = SyncManager.class.getPackage().getName();
-    public static final String REFRESH_COUNTS_ACTION = pkg + "REFRESH_COUNTS_ACTION";
+    public static final String UPDATE_DATA_ACTION = pkg + "UPDATE_DATA_ACTION";
     public static final String RELOAD_DATA_ACTION = pkg + "RELOAD_DATA_ACTION";
+
+    public static void sendBroadcast(Context context, String action) {
+        Intent intent =  new Intent(action);
+        context.sendBroadcast(intent);
+    }
 
     public static void setAlarm(Context context, String action, long millis)
     {

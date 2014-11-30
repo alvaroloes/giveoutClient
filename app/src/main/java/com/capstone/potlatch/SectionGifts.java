@@ -62,6 +62,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     private ScrollListener scrollListener = new ScrollListener();
     private Copier copier = new Copier();
     private BroadcastReceiver updateDataReceiver;
+    private BroadcastReceiver reloadDataReceiver;
 
     // Members that must be cleaned in onDestroyView to avoid potential memory leaks, as this
     // Fragment is retained
@@ -83,6 +84,17 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         setRetainInstance(true);
 
         scrollListener = new ScrollListener();
+
+        reloadDataReceiver = new ReloadDataBroadcastReceiver();
+        getActivity().registerReceiver(reloadDataReceiver, new IntentFilter(SyncManager.RELOAD_DATA_ACTION));
+    }
+
+    @Override
+    public void onDestroy() {
+        if (reloadDataReceiver != null) {
+            getActivity().unregisterReceiver(reloadDataReceiver);
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -142,7 +154,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     @Override
     public void onResume() {
         super.onResume();
-        refreshData();
+        reloadData();
     }
 
     @Override
@@ -150,8 +162,8 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         super.onStart();
 
         updateDataReceiver = new UpdateDataBroadcastReceiver();
-        IntentFilter updateIntentFilter=new IntentFilter(SyncManager.REFRESH_COUNTS_ACTION);
-        getActivity().registerReceiver(updateDataReceiver, updateIntentFilter);
+
+        getActivity().registerReceiver(updateDataReceiver, new IntentFilter(SyncManager.UPDATE_DATA_ACTION));
     }
 
     @Override
@@ -165,7 +177,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
     @Override
     public void onSelected() {
-        refreshData();
+        reloadData();
     }
 
     @Override
@@ -177,7 +189,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
         switch(tag) {
             case TAG_ACTION_LOGIN:
-                refreshData();
+                reloadData();
                 break;
             case TAG_ACTION_INAPPROPRIATE:
             case TAG_ACTION_DELETE:
@@ -219,14 +231,14 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         }
     }
 
-    private void refreshData() {
+    private void reloadData() {
         if (forCurrentUser && ! State.get().isUserLoggedIn()) {
             ui.signInButton.setVisibility(View.VISIBLE);
             return;
         }
         ui.signInButton.setVisibility(View.GONE);
         if (!dataHasBeenLoaded) {
-            loadPageData(0, null);
+            loadPageData(0, lastTitleFilter);
         }
         ui.adapter.notifyDataSetChanged();
     }
@@ -235,7 +247,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
         loadData(page, titleFilter, false);
     }
 
-    private void reloadCurrentData() {
+    private void refreshCurrentData() {
         loadData(0, lastTitleFilter, true);
     }
 
@@ -486,8 +498,18 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     public class UpdateDataBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "HEY", Toast.LENGTH_SHORT).show();
-            reloadCurrentData();
+            refreshCurrentData();
+        }
+    }
+
+    public class ReloadDataBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "RELOADING", Toast.LENGTH_SHORT).show();
+            dataHasBeenLoaded = false;
+            if (isResumed()) {
+                reloadData();
+            }
         }
     }
 }

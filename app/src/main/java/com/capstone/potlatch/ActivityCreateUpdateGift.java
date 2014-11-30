@@ -35,6 +35,7 @@ import com.capstone.potlatch.models.GiftChain;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthMultiPartRequest;
 import com.capstone.potlatch.utils.ImageSampler;
+import com.capstone.potlatch.utils.SyncManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -257,6 +258,7 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
                     new Response.Listener<Gift>() {
                         @Override
                         public void onResponse(Gift response) {
+                            SyncManager.sendBroadcast(ActivityCreateUpdateGift.this, SyncManager.RELOAD_DATA_ACTION);
                             finish();
                         }
                     },

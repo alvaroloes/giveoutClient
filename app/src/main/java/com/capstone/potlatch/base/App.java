@@ -16,7 +16,6 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
-        //TODO: Ver de qué forma informar a todos que se han creado nuevos gifts cuando vengo de ActivityCreate... *
 
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
         //TODO: Hacer un alert dialog
@@ -39,7 +38,7 @@ public class App extends Application {
         // Sets the alarm for periodic updates
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int syncFreqMinutes = Integer.parseInt(sharedPref.getString("sync_freq", "15"));
-        SyncManager.setAlarm(this, SyncManager.REFRESH_COUNTS_ACTION, syncFreqMinutes * 60 * 1000);
+        SyncManager.setAlarm(this, SyncManager.UPDATE_DATA_ACTION, syncFreqMinutes * 60 * 1000);
 
         /**
          * THIS IS A EXTREMELY INSECURE WAY TO ACCEPT HTTPS CERTIFICATES AS ALL OF THEM ARE ACCEPTED,
