@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.capstone.potlatch.base.Config;
 import com.capstone.potlatch.utils.SyncManager;
 
 public class ActivitySettings extends PreferenceActivity {
@@ -34,7 +35,8 @@ public class ActivitySettings extends PreferenceActivity {
         super.onPostCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.pref_general);
-        bindPreferenceSummaryToValue(findPreference("sync_freq"));
+        bindPreferenceSummaryToValue(findPreference(KEY_SYNC_FREQ));
+        findPreference(KEY_NO_INAPPROPRIATE_GIFT).setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
     }
 
     /**
@@ -65,6 +67,9 @@ public class ActivitySettings extends PreferenceActivity {
             if (KEY_SYNC_FREQ.equals(preference.getKey())) {
                 int syncMinutes = Integer.parseInt(((ListPreference) preference).getValue());
                 SyncManager.setAlarm(preference.getContext(), SyncManager.UPDATE_DATA_ACTION, syncMinutes * 60 * 1000);
+            } else if (KEY_NO_INAPPROPRIATE_GIFT.equals(preference.getKey())) {
+                Config.noInappropriateGifts = (boolean) value;
+                SyncManager.sendBroadcast(preference.getContext(), SyncManager.RELOAD_DATA_ACTION);
             }
             return true;
         }

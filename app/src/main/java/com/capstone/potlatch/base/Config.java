@@ -10,6 +10,8 @@ public class Config {
     public static String basicAuthName;
     public static String basicAuthPass;
     public static Integer pageSize;
+    @ResourcesUtils.DontFill
+    public static boolean noInappropriateGifts = true;
 
     static public void initFor(Context context, String environment){
         ResourcesUtils.fillStatic(context, Config.class,

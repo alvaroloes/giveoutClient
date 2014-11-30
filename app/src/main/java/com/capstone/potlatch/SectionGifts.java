@@ -188,7 +188,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
         switch(tag) {
             case TAG_ACTION_LOGIN:
-                reloadData();
+                SyncManager.sendBroadcast(getActivity(), SyncManager.RELOAD_DATA_ACTION);
                 break;
             case TAG_ACTION_INAPPROPRIATE:
             case TAG_ACTION_DELETE:
@@ -267,11 +267,14 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
 
         String basePath = forCurrentUser ? Routes.MY_GIFTS_PATH
                                          : Routes.GIFTS_PATH;
+        Long userId = State.get().isUserLoggedIn() ? State.get().getUser().id
+                                                   : null;
 
         String url = Routes.urlFor(basePath,
                                    Routes.PAGE_PARAMETER, page,
                                    Routes.LIMIT_PARAMETER, pageSize,
-                                   Routes.TITLE_PARAMETER, titleFilter);
+                                   Routes.TITLE_PARAMETER, titleFilter,
+                                   Routes.NOT_FLAGGED_BY_USER_ID_PARAMETER, Config.noInappropriateGifts ? userId : null);
 
         AuthRequest<List<Gift>> req = new AuthRequest<>(Request.Method.GET, url,
                                                                   new TypeReference<List<Gift>>() {},

@@ -16,6 +16,7 @@ public class Routes {
     public static final String LIMIT_PARAMETER = "limit";
     public static final String TOP_KIND_PARAMETER = "kind";
     public static final String REGRET_PARAMETER = "regret";
+    public static final String NOT_FLAGGED_BY_USER_ID_PARAMETER = "notFlagedBy";
 
     // Posible parameter values
     public static final String TOP_KIND_GIFT_COUNT = "giftCount";
