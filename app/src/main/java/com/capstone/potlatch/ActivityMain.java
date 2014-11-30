@@ -17,6 +17,7 @@ import com.capstone.potlatch.dialogs.BaseRetainedDialog;
 import com.capstone.potlatch.dialogs.DialogConfirm;
 import com.capstone.potlatch.dialogs.DialogLogin;
 import com.capstone.potlatch.utils.AwareFragment;
+import com.capstone.potlatch.utils.SyncManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,8 @@ public class ActivityMain extends BaseActivity implements DialogLogin.OnLoginLis
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setOnPageChangeListener(new OnSectionSelectedListener());
         tabs.setViewPager(pager);
+
+        SyncManager.setAlarm(this);
     }
 
 

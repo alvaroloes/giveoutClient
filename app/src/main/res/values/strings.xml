@@ -14,6 +14,7 @@
     <string name="login">Login</string>
     <string name="new_gift">Create new gift</string>
     <string name="activity_create_update_gift">Create a gift</string>
+    <string name="activity_settings">Settings</string>
     <string name="gift_touched_me">This Gift touched me</string>
     <string name="flag_inappropriate">Flag as inappropriate</string>
     <string name="login_title">Enter your credentials</string>
@@ -37,5 +38,8 @@
     <string name="total_gift_count">Total gifts count: %1$d</string>
     <string name="order_by_gift_touches">Order by gift touches</string>
     <string name="order_by_gift_count">Order by gift count</string>
+    <string name="dont_show_inappropriate_gifts">Do not show inappropriate gifts</string>
+    <string name="dont_show_inappropriate_gifts_desc">Prevents showing Gifts you have flagged as inappropriate</string>
+    <string name="sync_frequency">Sync frequency</string>
 
 </resources>

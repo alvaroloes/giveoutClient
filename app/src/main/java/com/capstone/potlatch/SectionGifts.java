@@ -2,7 +2,10 @@ package com.capstone.potlatch;
 
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -29,6 +33,7 @@ import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.net.Net;
 import com.capstone.potlatch.net.requests.AuthRequest;
+import com.capstone.potlatch.utils.SyncManager;
 import com.capstone.potlatch.utils.AwareFragment;
 import com.capstone.potlatch.utils.Copier;
 import com.capstone.potlatch.utils.EndlessScrollListener;
@@ -55,6 +60,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     private boolean forCurrentUser = false;
     private ScrollListener scrollListener;
     private Copier copier = new Copier();
+    private BroadcastReceiver updateDataReceiver;
 
     // Members that must be cleaned in onDestroyView to avoid potential memory leaks, as this
     // Fragment is retained
@@ -138,8 +144,20 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        updateDataReceiver = new UpdateDataBroadcastReceiver();
+        IntentFilter updateIntentFilter=new IntentFilter(SyncManager.DATA_SHOULD_BE_REFRESHED_ACTION);
+        getActivity().registerReceiver(updateDataReceiver, updateIntentFilter);
+    }
+
+    @Override
     public void onStop() {
         Net.getQueue().cancelAll(this);
+        if (updateDataReceiver != null) {
+            getActivity().unregisterReceiver(updateDataReceiver);
+        }
         super.onStop();
     }
 
@@ -441,6 +459,13 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
             ViewHolder.get(v, R.id.gift_delete).setOnClickListener(new OnGiftDeleteListener(getItem(position)));
 
             return v;
+        }
+    }
+
+    public class UpdateDataBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "HEY", Toast.LENGTH_SHORT).show();
         }
     }
 }

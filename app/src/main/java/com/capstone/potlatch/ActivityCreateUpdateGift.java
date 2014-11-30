@@ -157,22 +157,6 @@ public class ActivityCreateUpdateGift extends BaseActivity implements DialogLogi
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-//        if (giftChains == null) {
-//            String url = Routes.urlFor(Routes.GIFTS_CHAIN_PATH);
-//            AuthRequest<List<GiftChain>> req = new AuthRequest<>(Request.Method.GET, url,
-//                    new TypeReference<List<GiftChain>>() {},
-//                    new GiftChainRequestListener(),
-//                    getErrorListener(true));
-//            req.setTag(this);
-//            Net.addToQueue(req);
-//        }
-
-    }
-
-    @Override
     protected void onStop() {
         Net.getQueue().cancelAll(this);
         super.onStop();
