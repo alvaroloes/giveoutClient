@@ -20,7 +20,7 @@
     <string name="login_title">Enter your credentials</string>
     <string name="please_login">Please sign in</string>
     <string name="gift_unpublished">Unpublished</string>
-    <string name="gift_touches_number">%1$d touches</string>
+    <string name="gift_touches_number">%1$d</string>
     <string name="confirm_flat_inappropriate">Do you really want to <b>flag</b> this Gift as inappropriate?</string>
     <string name="confirm_unflag_inappropriate">Do you really want to <b>unflag</b> this Gift as inappropriate?</string>
     <string name="confirm_delete_gift">Do you really want to delete this Gift?</string>
@@ -41,5 +41,7 @@
     <string name="dont_show_inappropriate_gifts">Do not show inappropriate gifts</string>
     <string name="dont_show_inappropriate_gifts_desc">Prevents showing Gifts you have flagged as inappropriate</string>
     <string name="sync_frequency">Sync frequency</string>
+    <string name="delete_gift">Delete gift</string>
+    <string name="edit_gift">Edit gift</string>
 
 </resources>

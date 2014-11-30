@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"/>
         <TextView
             android:id="@+id/gift_chain_name"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"/>
     </LinearLayout>
 
@@ -42,55 +42,45 @@
         android:background="@color/gift_image_background"
         android:layout_below="@+id/gift_title_line" />
 
-    <TextView
-        android:id="@+id/gift_touches_count"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:layout_alignParentStart="true"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textStyle="bold"
-        android:layout_alignBottom="@+id/gift_button_set"
-        android:gravity="center_vertical"
-        android:layout_alignTop="@+id/gift_button_set"
-        android:text="123 touches"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:orientation="horizontal"
         android:id="@+id/gift_button_set"
-        android:layout_alignParentEnd="true"
         android:layout_below="@+id/gift_image">
         <ImageButton
             android:id="@+id/gift_inappropriate_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/btn_inappropriate"
-            android:contentDescription="@string/flag_inappropriate" />
-        <ImageButton
-            android:id="@+id/gift_touch_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/btn_touch"
-            android:contentDescription="@string/gift_touched_me" />
+            android:layout_alignParentStart="true"
+            android:contentDescription="@string/flag_inappropriate"/>
         <ImageButton
             android:id="@+id/gift_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="@string/flag_inappropriate" />
+            android:layout_alignParentStart="true"
+            android:contentDescription="@string/delete_gift" />
+        <Button
+            android:id="@+id/gift_touch_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/btn_touch"
+            android:contentDescription="@string/gift_touched_me"
+            android:layout_alignParentEnd="true"/>
         <ImageButton
             android:id="@+id/gift_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_edit"
-            android:contentDescription="@string/flag_inappropriate" />
+            android:contentDescription="@string/edit_gift"
+            android:layout_alignParentEnd="true"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/gift_description"

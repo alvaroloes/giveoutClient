@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -37,15 +38,15 @@ public class GiftsAdapter extends ArrayAdapter<Gift> {
         ((TextView) ViewHolder.get(v, R.id.gift_description)).setText(g.description);
 
         String touchesString = getContext().getString(R.string.gift_touches_number, g.touchedByUserIds.size());
-        ((TextView) ViewHolder.get(v, R.id.gift_touches_count)).setText(touchesString);
+        ((Button) ViewHolder.get(v, R.id.gift_touch_button)).setText(touchesString);
 
         TextView giftChainTextView = ViewHolder.get(v, R.id.gift_chain_name);
-        giftChainTextView.setTextColor(getContext().getResources().getColor(android.R.color.primary_text_dark));
+//        giftChainTextView.setTextColor(getContext().getResources().getColor(android.R.color.primary_text_dark));
         String giftChainName = getContext().getString(R.string.gift_unpublished);
         if (g.giftChain != null) {
             giftChainName = g.giftChain.name;
         } else {
-            giftChainTextView.setTextColor(getContext().getResources().getColor(R.color.gift_unpublished_text_color));
+//            giftChainTextView.setTextColor(getContext().getResources().getColor(R.color.gift_unpublished_text_color));
         }
         giftChainTextView.setText(giftChainName);
 
