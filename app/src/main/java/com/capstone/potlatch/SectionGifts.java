@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -346,6 +345,7 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
             } else {
                 copier.copyProperties(originalGift, response);
             }
+            SyncManager.sendBroadcast(getActivity(), SyncManager.RELOAD_DATA_ACTION);
             ui.adapter.notifyDataSetChanged();
         }
     }
@@ -505,7 +505,6 @@ public class SectionGifts extends Fragment implements AwareFragment.OnViewPagerF
     public class ReloadDataBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "RELOADING", Toast.LENGTH_SHORT).show();
             dataHasBeenLoaded = false;
             if (isResumed()) {
                 reloadData();
