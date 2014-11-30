@@ -40,7 +40,11 @@ public class DialogLogin extends BaseRetainedDialog {
     private UI ui;
 
     public static DialogLogin open(FragmentManager fragmentManager, String tag) {
-        DialogLogin dialogLogin = (DialogLogin) fragmentManager.findFragmentByTag(tag);
+        DialogLogin dialogLogin = null;
+        try {
+            dialogLogin = (DialogLogin) fragmentManager.findFragmentByTag(tag);
+        } catch (ClassCastException ignored) {}
+
         if (dialogLogin == null) {
             dialogLogin = new DialogLogin();
             dialogLogin.show(fragmentManager, tag);

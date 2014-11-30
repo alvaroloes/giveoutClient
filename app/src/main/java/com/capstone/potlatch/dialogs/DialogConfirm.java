@@ -21,7 +21,11 @@ public class DialogConfirm extends BaseRetainedDialog {
     private OnDialogConfirmListener mListener;
 
     public static DialogConfirm open(FragmentManager fragmentManager, String tag, String text) {
-        DialogConfirm dialogConfirm = (DialogConfirm) fragmentManager.findFragmentByTag(tag);
+        DialogConfirm dialogConfirm = null;
+        try {
+            dialogConfirm = (DialogConfirm) fragmentManager.findFragmentByTag(tag);
+        } catch (ClassCastException ignored) {}
+
         if (dialogConfirm == null) {
             dialogConfirm = new DialogConfirm();
 

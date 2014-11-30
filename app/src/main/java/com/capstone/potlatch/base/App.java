@@ -17,13 +17,14 @@ public class App extends Application {
     @Override
     public void onCreate() {
 
+        //TODO: No mostrar los obscenos según la preferencia del usuario
         //TODO: Hacer un progress dialog para evitar interacción del usuario (cuando el login por ejemplo)
         //TODO: Hacer un alert dialog
-        //TODO: Hacer el editar gift (creo que es simple)
-        //TODO: Ordenar por creación o número de touches
-        //TODO: No mostrar los obscenos según la preferencia del usuario
-        //TODO: Material design
+        //TODO: Diseño
         //TODO: Image zoom
+        //TODO: Hacer el editar gift (creo que es simple)
+        //TODO: Material design
+
         //TODO: Filtro de gift chains por name no está implementado en el servidor
 
         // Initialize Config class
