@@ -35,7 +35,7 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <com.capstone.potlatch.utils.FadeInNetworkImageView
+    <com.capstone.giveout.utils.FadeInNetworkImageView
         android:id="@+id/gift_image"
         android:layout_width="match_parent"
         android:layout_height="@dimen/gift_image_height"

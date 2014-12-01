@@ -1,0 +1,174 @@
+package com.capstone.giveout.dialogs;
+
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.capstone.giveout.R;
+import com.capstone.giveout.base.Config;
+import com.capstone.giveout.base.Routes;
+import com.capstone.giveout.base.State;
+import com.capstone.giveout.models.User;
+import com.capstone.giveout.net.Net;
+import com.capstone.giveout.net.OAuth2Token;
+import com.capstone.giveout.net.requests.AuthRequest;
+import com.capstone.giveout.net.requests.OAuth2TokenRequest;
+
+
+/**
+ * Activities that contain this fragment must implement the
+ * {@link DialogLogin.OnLoginListener} interface
+ * to handle interaction events.
+ */
+public class DialogLogin extends BaseRetainedDialog {
+    private OnLoginListener mListener;
+
+    class UI {
+        private EditText username;
+        private EditText password;
+    }
+
+    private UI ui;
+
+    public static DialogLogin open(FragmentManager fragmentManager, String tag) {
+        DialogLogin dialogLogin = null;
+        try {
+            dialogLogin = (DialogLogin) fragmentManager.findFragmentByTag(tag);
+        } catch (ClassCastException ignored) {}
+
+        if (dialogLogin == null) {
+            dialogLogin = new DialogLogin();
+            dialogLogin.show(fragmentManager, tag);
+        }
+        return dialogLogin;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        ui = new UI();
+        getDialog().setTitle(getActivity().getString(R.string.login_title));
+        View v = inflater.inflate(R.layout.dialog_login, container, false);
+
+        ui.username = (EditText) v.findViewById(R.id.login_username);
+        ui.password = (EditText) v.findViewById(R.id.login_password);
+
+        v.findViewById(R.id.login_accept_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doLogin();
+            }
+        });
+
+        return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        ui = null;
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnLoginListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnLoginListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (mListener != null && ! State.get().isUserLoggedIn()) {
+            mListener.onLoginFinish(this, getTag(), false);
+        }
+    }
+
+    void doLogin() {
+        final String username = String.valueOf(ui.username.getText());
+        final String password = String.valueOf(ui.password.getText());
+        boolean error = false;
+
+        if (username.length() == 0) {
+            ui.username.setError("Please enter a user name");
+            error = true;
+        }
+
+        if (password.length() == 0) {
+            ui.password.setError("Please enter a password");
+            error = true;
+        }
+
+        if (error) {
+            return;
+        }
+
+        String url = Routes.urlFor(Routes.TOKEN_PATH);
+        OAuth2TokenRequest req = new OAuth2TokenRequest(url, username, password, new RequestLoginSuccessListener(), new RequestErrorListener());
+        req.setBasicAuth(Config.basicAuthName, Config.basicAuthPass);
+        Net.addToQueue(req);
+    }
+
+    class RequestLoginSuccessListener implements Response.Listener<OAuth2Token> {
+        @Override
+        public void onResponse(OAuth2Token response) {
+            State.get().setOauth2Token(response);
+            Net.setGlobalOAuth2Token(response);
+
+            // Get user data
+            String url = Routes.urlFor(Routes.CURRENT_USER_PATH);
+            AuthRequest<User> req = new AuthRequest<User>(Request.Method.GET, url, User.class, new Response.Listener<User>() {
+                @Override
+                public void onResponse(User response) {
+                    State.get().setUser(response);
+                    if (mListener != null) {
+                        mListener.onLoginFinish(DialogLogin.this, getTag(), true);
+                        dismiss();
+                    }
+                }
+            }, new RequestErrorListener());
+            Net.addToQueue(req);
+        }
+    }
+
+    class RequestErrorListener implements Response.ErrorListener {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            Toast.makeText(getActivity(), "Login error", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     */
+    public interface OnLoginListener {
+        public void onLoginFinish(BaseRetainedDialog dialogFragment, String tag, boolean success);
+    }
+
+}
