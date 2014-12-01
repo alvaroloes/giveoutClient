@@ -58,10 +58,6 @@ public class ActivitySettings extends PreferenceActivity {
                 preference.setSummary(index >= 0 ? listPreference.getEntries()[index]
                                                : null);
 
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
             }
 
             if (KEY_SYNC_FREQ.equals(preference.getKey())) {

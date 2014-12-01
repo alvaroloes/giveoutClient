@@ -31,7 +31,7 @@
     <string name="dont_add_to_gift_chain">Do not add the Gift to a Gift chain. Leave it unpublished</string>
     <string name="gift_chain_name">Gift chain name</string>
     <string name="choose_gift_chain">Choose existing</string>
-    <string name="dont_publish_in_gift_chain">Do now publish this Gift in any Gift chain</string>
+    <string name="dont_publish_in_gift_chain">Do not publish this Gift in any Gift chain</string>
     <string name="save">Save</string>
     <string name="filter_by_name">Filter by name</string>
     <string name="total_touches">Total touches: %1$d</string>
