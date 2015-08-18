@@ -1,5 +1,6 @@
 # Giveout client implementation
-This is the client-side implementation (Android) of the Android Capstone Project belonging to the Mobile Cloud Computing with Android Specialization.
+This is the client-side implementation (Android) of the Android Capstone Project belonging to the [Mobile Cloud Computing with Android Specialization](https://www.coursera.org/specialization/mobilecloudcomputing2/36).
+
 
 ## Demo video
 
